@@ -1,0 +1,53 @@
+{
+	"pages": [
+		{
+			"path": "pages/home/Index",
+			"style": {
+				"navigationBarTitleText": "首页"
+			}
+		},
+		{
+			"path": "pages/home/CredentialInfo",
+			"style": {
+				"navigationBarTitleText": "憑證信息"
+			}
+		},
+		{
+			"path": "pages/auth/auth-login",
+			"style": {
+				"navigationBarTitleText": "授权登录"
+			}
+		},
+		{
+			"path": "pages/auth/apply-account-api",
+			"style": {
+				"navigationBarTitleText": "账号申请（接口）"
+			}
+		},
+		{
+			"path": "pages/auth/vc-loading",
+			"style": {
+				"navigationBarTitleText": "中国移动授权"
+			}
+		},
+		{
+			"path": "pages/auth/vc-upload",
+			"style": {
+				"navigationBarTitleText": "上传VC凭证"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^u-(.*)": "uview-plus/components/u-$1/u-$1.vue",
+			"^up-(.*)": "uview-plus/components/u-$1/u-$1.vue"
+		}
+  	}
+}

@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+/* 关键：强制让 Tailwind 扫描 uni-app 的页面和组件 */
+@source "./src/**/*.{vue,js,ts}";
+@source "./src/pages/**/*.{vue,js,ts}";
+@source "./src/components/**/*.{vue,js,ts}";
+@source "./uni_modules/**/*.{vue,js,ts}";
+
+/* 兼容 uni-app：关闭 Tailwind 的全局样式重置（避免和 uni.scss 冲突） */
+@layer base {
+  * {
+    box-sizing: border-box !important;
+  }
+}

@@ -1,0 +1,10 @@
+# 检查是否落后远程提交
+behind=$(git rev-list --count --left-only @{u}...HEAD 2>/dev/null || echo 0)
+if [ "$behind" -gt 0 ]; then
+  echo "错误：落后 $behind 个提交！请先执行 git pull"
+  git stash save "auto stash: behind remote"
+  exit 1
+fi
+
+# 执行 lint-staged
+npx lint-staged

@@ -1,0 +1,35 @@
+// 此自定义uview-plus主题生成于2025-12-04 11:07
+// 地址：https://uview-plus.jiangruyi.com/guide/theme.html
+
+$u-primary: #db0011 !default;           // 你的品牌红
+$u-primary-light: rgba(#db0011, 0.1) !default;    // 浅色背景（重点！必须写）
+$u-primary-disabled: rgba(#db0011, 0.4) !default; // 禁用态（重点！必须写）
+
+$u-type-primary: #db0011 !default;
+$u-type-error: #fa3534;
+$u-type-warning: #ff9900;
+$u-type-success: #19be6b;
+$u-type-info: #909399;
+$u-type-primary-light: #ecf5ff;
+$u-type-error-light: #fef0f0;
+$u-type-warning-light: #fdf6ec;
+$u-type-success-light: #dbf1e1;
+$u-type-info-light: #f4f4f5;
+$u-type-primary-dark: #db0011 !default;
+$u-type-error-dark: #dd6161;
+$u-type-warning-dark: #f29100;
+$u-type-success-dark: #18b566;
+$u-type-info-dark: #82848a;
+$u-type-primary-disabled: #a0cfff;
+$u-type-error-disabled: #fab6b6;
+$u-type-warning-disabled: #fcbd71;
+$u-type-success-disabled: #71d5a1;
+$u-type-info-disabled: #c8c9cc;
+$u-main-color: #303133;
+$u-content-color: #606266;
+$u-tips-color: #909399;
+$u-light-color: #c0c4cc;
+$u-border-color: #e4e7ed;
+$u-bg-color: #f3f4f6;
+$u-form-item-border-color: #dcdfe6;
+$u-form-item-height: 70rpx;

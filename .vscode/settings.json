@@ -1,0 +1,32 @@
+{
+  "cSpell.words": [
+    "Apdu",
+    "dcloud",
+    "dcloudio",
+    "jiaojiao",
+    "postcssremtoresponsivepixel",
+    "Qrcode",
+    "Secp",
+    "uview",
+    "uvtw",
+    "Weapp"
+  ],
+  "i18n-ally.localesPaths": [
+    "Singvc-UseCase5-Demo-2_副本/org/apache/commons/codec/language"
+  ],
+   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+   "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+  "i18n-ally.keystyle": "nested"
+}

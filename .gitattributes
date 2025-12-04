@@ -1,1 +1,13 @@
-*.nvue linguist-language=Vue
+# 强制所有文件使用 LF 换行符
+* text=auto eol=lf
+
+# 或者更明确一些
+*.js eol=lf
+*.ts eol=lf
+*.vue eol=lf
+*.json eol=lf
+*.yaml eol=lf
+*.yml eol=lf
+*.html eol=lf
+*.css eol=lf
+*.scss eol=lf
