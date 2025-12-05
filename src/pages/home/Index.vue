@@ -2,16 +2,17 @@
  * @Author: git.name
  * @Date: 2025-12-03 16:57:37
  * @LastEditors: git.name
- * @LastEditTime: 2025-12-04 15:27:54
+ * @LastEditTime: 2025-12-05 14:07:09
  * @Description: 
 -->
 <template>
   <PageContainer>
     <view class="home-bg" @click="AccountApplication"></view>
-    <!-- <Test v-if="showTestTools" :parse-credential-args="parseCredentialArgs" :storage-key="CREDENTIAL_STORAGE_KEY" /> -->
+    <Test />
   </PageContainer>
   <up-modal
     :show="showModal"
+    title="提示"
     confirmText="確認"
     cancelText="取消"
     :showCancelButton="true"
@@ -19,7 +20,7 @@
     @confirm="onConfirm"
     @cancel="onCancel"
   >
-    <view class="flex! flex-col gap-2 flex-wrap items-center justify-center">
+    <view class="flex-wrap">
       <text>請到</text>
       <text class="mx-1 text-[#db0011] font-semibold">中移可信憑證</text>
       <text>微信小程序申請手機號憑證。</text>
@@ -31,15 +32,18 @@
 import { ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import PageContainer from '@/components/PageContainer.vue';
-// import Test from './Test.vue';
+import { useCredentialStore } from '@/stores';
+import Test from './Test.vue';
+
+const credentialStore = useCredentialStore();
 
 const showModal = ref(false);
 const weChatParams = ref('');
 const awaitingCredential = ref(false);
-const CREDENTIAL_STORAGE_KEY = 'credentialInfo';
 const appName = '汇丰银行';
 const templateId = 'c41b7c0ca0e64810bdbdca152992e2a0';
 const miniAppId = 'gh_cc48f41a4594';
+const scene = '账号申请';
 
 const AccountApplication = () => {
   console.log('AccountApplication clicked');
@@ -61,7 +65,7 @@ const launchMiniProgram = () => {
       weChatParams.value = '';
       weixinService.launchMiniProgram({
         id: miniAppId,
-        path: `/pages/authn/mobile-demo?appName=${appName}&templateId=${templateId}`,
+        path: `/pages/authn/mobile-demo?appName=${appName}&templateId=${templateId}&scene=${scene}`,
         type: 2
       });
     },
@@ -91,7 +95,7 @@ const onCancel = () => {
   showModal.value = false;
 };
 
-onShow(() => {
+onShow(async () => {
   // #ifdef APP-PLUS
   const args = plus.runtime.arguments;
   if (!args) {
@@ -103,62 +107,13 @@ onShow(() => {
   }
   awaitingCredential.value = false;
   weChatParams.value = args;
-  const credential = parseCredentialArgs(args);
-  if (credential) {
-    uni.setStorageSync(CREDENTIAL_STORAGE_KEY, credential);
+  console.log('回调参数', args);
+  const success = await credentialStore.handleCredentialArgs(args);
+  if (success) {
     uni.navigateTo({ url: '/pages/home/CredentialInfo' });
   }
   // #endif
 });
-
-const parseCredentialArgs = (raw: string) => {
-  try {
-    const query = raw.startsWith('?') ? raw.slice(1) : raw;
-    const queryMap = parseQuery(query);
-    const allow = queryMap.ifAllow;
-    if (allow && allow !== 'true') {
-      return null;
-    }
-    const credentialStr = queryMap.Credential;
-    if (!credentialStr) {
-      return null;
-    }
-    const decodedStr = safeDecodeURIComponent(credentialStr);
-    const credential = JSON.parse(decodedStr || credentialStr);
-    return credential;
-  } catch (error) {
-    console.log('parse credential args error', error);
-    return null;
-  }
-};
-
-const parseQuery = (query: string) => {
-  return query.split('&').reduce(
-    (acc, pair) => {
-      if (!pair) {
-        return acc;
-      }
-      const [key, ...rest] = pair.split('=');
-      if (!key) {
-        return acc;
-      }
-      const decodedKey = safeDecodeURIComponent(key);
-      const decodedValue = safeDecodeURIComponent(rest.join('='));
-      acc[decodedKey] = decodedValue;
-      return acc;
-    },
-    {} as Record<string, string>
-  );
-};
-
-const safeDecodeURIComponent = (value: string) => {
-  try {
-    return decodeURIComponent(value);
-  } catch (error) {
-    console.log('decodeURIComponent error', error, value);
-    return value;
-  }
-};
 </script>
 
 <style lang="scss" scoped>

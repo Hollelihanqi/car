@@ -5,7 +5,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => {
-  const UnoCSS = (await import('unocss/vite')).default
+  const UnoCSS = (await import('unocss/vite')).default;
   return {
     resolve: {
       alias: {
@@ -21,7 +21,6 @@ export default defineConfig(async () => {
         imports: ['vue', 'vue-router', 'pinia'],
         dts: 'src/typings/auto-imports.d.ts'
       })
-      // tailwindcss()
     ],
     css: {
       preprocessorOptions: {
@@ -30,6 +29,6 @@ export default defineConfig(async () => {
           silenceDeprecations: ['legacy-js-api', 'color-functions', 'import']
         }
       }
-    }
+    },
   };
 });
