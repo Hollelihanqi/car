@@ -1,41 +1,38 @@
 <template>
-  <view class="content">
-    <image class="logo" src="/static/logo.png" />
-    <view class="text-area">
-      <text class="title">{{ title }}</text>
+  <PageContainer>
+    <view class="w-full h-full flex items-center justify-center bg-white">
+      <image class="logo w-30 h-30" src="/static/logo.svg" mode="aspectFit" />
     </view>
-  </view>
+  </PageContainer>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-const title = ref('Hello');
+import { onMounted } from 'vue';
+import PageContainer from '@/components/PageContainer.vue';
+
+onMounted(() => {
+  // 2秒后跳转到首页
+  setTimeout(() => {
+    uni.reLaunch({
+      url: '/pages/home/Index'
+    });
+  }, 2000);
+});
 </script>
 
-<style>
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
+<style lang="scss" scoped>
 .logo {
-  height: 200rpx;
-  width: 200rpx;
-  margin-top: 200rpx;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 50rpx;
+  animation: fadeIn 0.8s ease-out forwards;
 }
 
-.text-area {
-  display: flex;
-  justify-content: center;
-}
-
-.title {
-  font-size: 36rpx;
-  color: #8f8f94;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }
 </style>

@@ -17,6 +17,7 @@ export default defineConfig({
   theme: {
     colors: {
       primary: '#db0011', // 主色
+      primary2: '#c92a25' // 中移红
     }
   }
 });

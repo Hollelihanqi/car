@@ -1,15 +1,42 @@
 {
 	"pages": [
 		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": ""
+			}
+		},
+		{
 			"path": "pages/home/Index",
 			"style": {
 				"navigationBarTitleText": "首页"
 			}
 		},
 		{
+			"path": "pages/home/AccountOpen",
+			"style": {
+				"navigationBarTitleText": "开立账户",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/home/CredentialInfo",
 			"style": {
-				"navigationBarTitleText": "憑證信息"
+				"navigationBarTitleText": "手机号档案凭证"
+			}
+		},
+		{
+			"path": "pages/home/CredentialLoading",
+			"style": {
+				"navigationBarTitleText": "申请凭证",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/home/CredentialVerify",
+			"style": {
+				"navigationBarTitleText": "凭证验证"
 			}
 		},
 		{

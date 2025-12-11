@@ -14,6 +14,7 @@ const { pageHeight } = usePageHeight();
 .page-container {
   width: 100%;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 </style>

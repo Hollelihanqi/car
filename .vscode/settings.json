@@ -11,9 +11,6 @@
     "uvtw",
     "Weapp"
   ],
-  "i18n-ally.localesPaths": [
-    "Singvc-UseCase5-Demo-2_副本/org/apache/commons/codec/language"
-  ],
    "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[vue]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -28,5 +25,6 @@
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit"
   },
-  "i18n-ally.keystyle": "nested"
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000
 }

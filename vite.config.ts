@@ -29,6 +29,6 @@ export default defineConfig(async () => {
           silenceDeprecations: ['legacy-js-api', 'color-functions', 'import']
         }
       }
-    },
+    }
   };
 });

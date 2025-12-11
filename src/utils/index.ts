@@ -3,7 +3,7 @@
  * @param {string} vc - JSON 格式的字符串
  * @returns {string} - 排序后的 JSON 字符串
  */
-export const jsonStrsSort = (vc) => {
+export const jsonStrSort = (vc) => {
   if (!vc) {
     return vc;
   }
