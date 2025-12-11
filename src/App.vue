@@ -16,10 +16,12 @@ onShow(async () => {
   // #ifdef APP-PLUS
   const args = plus.runtime.arguments;
   if (!args) {
+    uni.navigateTo({ url: '/pages/home/Index' });
     awaitingCredential.value = false;
     return;
   }
   if (!awaitingCredential.value && args === weChatParams.value) {
+    uni.navigateTo({ url: '/pages/home/Index' });
     return;
   }
   awaitingCredential.value = false;
