@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { jsonStrSort } from '@/utils';
 import sm3 from '@/utils/sm-crypto/sm3';
+import { useVerificationStore } from './verification';
 
 // 小程序配置常量
 const MINI_APP_ID = 'gh_1a9fe4ccb8ba';
@@ -153,11 +154,15 @@ export const useCredentialStore = defineStore(
 
       await saveCredential(credential);
 
+      // 立即开始验证流程
+      const verificationStore = useVerificationStore();
+      verificationStore.startVerification();
+
       // 2秒后跳转到验证页面（只有未验证且有凭证信息时才跳转）
       setTimeout(() => {
         // 判断：未验证且存在凭证信息
         if (!isVerified.value && credentialInfo.value) {
-          uni.navigateTo({
+          uni.redirectTo({
             url: '/pages/home/CredentialVerify'
           });
         }

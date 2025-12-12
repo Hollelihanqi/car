@@ -1,5 +1,5 @@
 {
-    "name" : "HBANK",
+    "name" : "MoVer",
     "appid" : "__UNI__97E9289",
     "description" : "",
     "versionName" : "1.0.0",
@@ -23,8 +23,29 @@
         },
         /* 应用发布信息 */
         "distribute" : {
+            /* 启动页配置 */
+            "splashscreen" : {
+                "android" : {
+                    "hdpi" : "static/splash/android/hdpi.png",
+                    "xhdpi" : "static/splash/android/xhdpi.png",
+                    "xxhdpi" : "static/splash/android/xxhdpi.png",
+                    "xxxhdpi" : "static/splash/android/xxxhdpi.png"
+                },
+                "ios" : {
+                    "iphone" : {
+                        "@2x" : "static/splash/ios/iphone@2x.png",
+                        "@3x" : "static/splash/ios/iphone@3x.png"
+                    },
+                    "ipad" : {
+                        "1x" : "static/splash/ios/ipad.png",
+                        "2x" : "static/splash/ios/ipad@2x.png"
+                    }
+                },
+                "androidStyle" : "default"
+            },
             /* android打包配置 */
             "android" : {
+                "name" : "MoVer",
                 "permissions" : [
                     "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
                     "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
@@ -45,6 +66,7 @@
             },
             /* ios打包配置 */
             "ios" : {
+                "name" : "MoVer",
                 "dSYMs" : false
             },
             /* SDK配置 */
@@ -120,6 +142,6 @@
     },
     "vueVersion" : "3",
     "h5" : {
-        "title" : "HSBC"
+        "title" : "MoVer"
     }
 }

@@ -7,7 +7,7 @@ import 'uno.css';
 export function createApp() {
   const app = createSSRApp(App);
   const pinia = Pinia.createPinia();
-  pinia.use(createUniPersistPlugin({ keyPrefix: 'hsbc_' }));
+  pinia.use(createUniPersistPlugin({ keyPrefix: 'bank_' }));
   app.use(pinia);
   return {
     app

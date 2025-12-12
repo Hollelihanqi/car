@@ -9,6 +9,8 @@ interface RequestConfig {
   data?: any;
   header?: Record<string, string>;
   timeout?: number;
+  baseURL?: string; // 自定义 baseURL
+  authorization?: string; // 自定义 Authorization
 }
 
 interface RequestResponse<T = any> {
@@ -18,24 +20,30 @@ interface RequestResponse<T = any> {
 }
 
 // 基础配置
-const BASE_URL = 'http://10.0.48.22:9011'; // TODO: 替换为实际的 API 域名
+const BASE_URL = 'http://10.0.48.22:9011'; // VC验证接口的 baseURL
+export const BASE_URL_MOBILE = 'http://10.0.158.84:9005'; // 手机号验证接口的 baseURL
 const TIMEOUT = 360000; // 120秒超时
+export const DEFAULT_AUTHORIZATION =
+  'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcGVuZGlkIiwiaWF0IjoxNzY1MjU3NzcxfQ.ksbETIMO7dUFAwbQIr_e7cKTHNM662W5DFbF6NcajQs'; // VC验证接口的 Authorization
+export const MOBILE_AUTHORIZATION =
+  'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwiaWF0IjoxNzY1MTc3MzM3fQ.WbJbhVf3hM-Lp4y35AeMUtY2Nt9Z323h07-2H1qAWvk'; // 手机号验证接口的 Authorization
 
 /**
  * 统一请求方法
  */
 const request = <T = any>(config: RequestConfig): Promise<T> => {
   return new Promise((resolve, reject) => {
-    const { url, method = 'GET', data, header = {}, timeout = TIMEOUT } = config;
+    const { url, method = 'GET', data, header = {}, timeout = TIMEOUT, baseURL, authorization } = config;
 
     // 构建完整 URL
-    const fullUrl = url.startsWith('http') ? url : `${BASE_URL}${url}`;
+    const baseUrl = baseURL || BASE_URL;
+    const fullUrl = url.startsWith('http') ? url : `${baseUrl}${url}`;
 
     // 统一请求头
+    const authToken = authorization !== undefined ? authorization : DEFAULT_AUTHORIZATION;
     const headers = {
       'Content-Type': 'application/json',
-      Authorization:
-        'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcGVuZGlkIiwiaWF0IjoxNzY1MjU3NzcxfQ.ksbETIMO7dUFAwbQIr_e7cKTHNM662W5DFbF6NcajQs',
+      Authorization: authToken,
       ...header
     };
 

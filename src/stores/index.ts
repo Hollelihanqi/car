@@ -9,3 +9,4 @@ export { useAuthStore } from './modules/auth';
 export { useUserStore } from './modules/user';
 export { useAppStore } from './modules/app';
 export { useCredentialStore } from './modules/credential';
+export { useVerificationStore } from './modules/verification';

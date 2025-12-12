@@ -1,13 +1,6 @@
 {
 	"pages": [
 		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationStyle": "custom",
-				"navigationBarTitleText": ""
-			}
-		},
-		{
 			"path": "pages/home/Index",
 			"style": {
 				"navigationBarTitleText": "首页"

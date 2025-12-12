@@ -15,13 +15,25 @@ onShow(async () => {
   console.log('App Show');
   // #ifdef APP-PLUS
   const args = plus.runtime.arguments;
+
+  // 获取当前页面路径
+  const pages = getCurrentPages();
+  const currentPage = pages[pages.length - 1];
+  const currentRoute = currentPage ? `/${currentPage.route}` : '';
+
   if (!args) {
-    uni.navigateTo({ url: '/pages/home/Index' });
+    // 如果当前不在首页，使用 reLaunch 清空页面栈并跳转到首页
+    if (currentRoute !== '/pages/home/Index') {
+      uni.reLaunch({ url: '/pages/home/Index' });
+    }
     awaitingCredential.value = false;
     return;
   }
   if (!awaitingCredential.value && args === weChatParams.value) {
-    uni.navigateTo({ url: '/pages/home/Index' });
+    // 如果当前不在首页，使用 reLaunch 清空页面栈并跳转到首页
+    if (currentRoute !== '/pages/home/Index') {
+      uni.reLaunch({ url: '/pages/home/Index' });
+    }
     return;
   }
   awaitingCredential.value = false;

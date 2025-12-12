@@ -2,14 +2,28 @@
   <PageContainer>
     <view class="flex flex-col bg-white h-screen px-4 pt-6 pb-6 overflow-hidden">
       <!-- 标题部分 -->
-      <view class="verify-header mb-6">
+      <view class="verify-header">
         <view class="header-icon-wrapper">
-          <view class="header-icon">
+          <!-- 验证成功：绿色圆圈带白色勾 -->
+          <view v-if="allItemsComplete && allItemsSuccess" class="success-icon-bg">
+            <view class="success-check-large"></view>
+          </view>
+          <!-- 验证失败：红色圆圈带白色叉 -->
+          <view v-else-if="allItemsComplete && !allItemsSuccess && verifyError" class="error-icon-bg">
+            <view class="error-cross-large"></view>
+          </view>
+          <!-- 验证中：默认图标 -->
+          <view v-else class="header-icon">
             <view class="shield-icon"></view>
           </view>
         </view>
-        <text class="header-title">{{ allVerified ? '验证已完成' : '验证中' }}</text>
-        <text v-if="!allVerified" class="header-subtitle">正在验证凭证信息...</text>
+        <text class="header-title" :class="headerTitleClass">{{ headerTitle }}</text>
+        <!-- 验证失败时的提示文字 -->
+        <view v-if="allItemsComplete && !allItemsSuccess && verifyError" class="error-tip-wrapper">
+          <text class="error-tip-text">请在</text>
+          <text class="error-tip-link" @click="handleLaunchMiniProgram">中移可信凭证</text>
+          <text class="error-tip-text">重新申请手机号档案凭证后再次尝试</text>
+        </view>
       </view>
 
       <!-- 验证条目列表 -->
@@ -28,17 +42,22 @@
                   <view class="success-checkmark"></view>
                 </view>
               </view>
+              <!-- 错误状态：红色圆圈带白色叉 -->
+              <view v-else-if="item.status === 'error'" class="flex items-center justify-center">
+                <view class="error-circle">
+                  <view class="error-cross"></view>
+                </view>
+              </view>
+              <!-- 停止状态：红色圆圈带感叹号 -->
+              <view v-else-if="item.status === 'stopped'" class="flex items-center justify-center">
+                <view class="stopped-circle">
+                  <view class="stopped-exclamation"></view>
+                </view>
+              </view>
               <!-- 加载中状态：灰色圆形箭头（旋转） -->
               <view v-else-if="item.status === 'loading'" class="flex items-center justify-center">
                 <view class="loading-circle">
                   <view class="loading-arrow"></view>
-                </view>
-              </view>
-              <!-- 待处理状态：刷新图标（灰色圆形箭头） -->
-              <view v-else class="flex items-center justify-center">
-                <view class="refresh-icon">
-                  <view class="refresh-circle"></view>
-                  <view class="refresh-arrow"></view>
                 </view>
               </view>
             </view>
@@ -46,199 +65,126 @@
         </view>
       </view>
 
-      <!-- 验证成功标识 -->
-      <view v-if="allVerified" class="verify-success-card shrink-0">
-        <view class="success-icon-wrapper">
-          <view class="success-icon-bg">
-            <view class="success-check-large"></view>
-          </view>
-        </view>
-        <text class="success-title">驗證通過</text>
-        <view class="success-info">
-          <view class="info-row">
-            <text class="info-label">驗證流水號</text>
-            <text class="info-value">{{ verifySerialNumber }}</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">驗證時間</text>
-            <text class="info-value">{{ verifyTime }}</text>
-          </view>
-        </view>
+      <!-- 验证失败时的取消按钮 -->
+      <view v-if="allItemsComplete && !allItemsSuccess && verifyError" class="cancel-button-wrapper">
+        <button class="cancel-button" @click="handleCancel">取消</button>
       </view>
     </view>
+
+    <!-- 验证失败跳转提示 Modal -->
+    <up-modal
+      :show="showFailModal"
+      title="提示"
+      :showCancelButton="true"
+      cancelText="取消"
+      confirmText="确定"
+      confirmColor="#db0011"
+      @confirm="handleModalConfirm"
+      @cancel="handleModalCancel"
+    >
+      <view class="modal-content">
+        <text>即将跳转至信息输入界面</text>
+      </view>
+    </up-modal>
   </PageContainer>
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue';
 import PageContainer from '@/components/PageContainer.vue';
-import { useCredentialStore } from '@/stores';
-import { verifyVC } from '@/api/credential';
+import { useVerificationStore, useCredentialStore } from '@/stores';
 
-interface VerifyItem {
-  label: string;
-  status: 'pending' | 'loading' | 'success';
-}
-
+const verificationStore = useVerificationStore();
 const credentialStore = useCredentialStore();
 
-const verifyItems = ref<VerifyItem[]>([
-  { label: '验证签发者身份', status: 'pending' },
-  { label: '验证所有者身份', status: 'pending' },
-  { label: '验证签名', status: 'pending' },
-  { label: '验证有效期', status: 'pending' },
-  { label: '验证吊销状态', status: 'pending' }
-]);
+// 从 store 中获取验证状态
+const verifyItems = computed(() => verificationStore.verifyItems);
+const verifyError = computed(() => verificationStore.verifyError);
 
-const allVerified = ref(false);
-const verifySerialNumber = ref('');
-const verifyTime = ref('');
-
-/** 生成验证流水号 */
-const generateSerialNumber = () => {
-  const timestamp = Date.now();
-  const random = Math.floor(Math.random() * 10000)
-    .toString()
-    .padStart(4, '0');
-  return `VF${timestamp}${random}`;
-};
-
-/** 获取当前时间 ISO 格式 */
-const getCurrentTime = () => {
-  return new Date().toISOString();
-};
-
-/** 调用后端验证接口 */
-const callVerifyAPI = async () => {
-  try {
-    const credential = credentialStore.credentialInfo;
-    const hash = credentialStore.credentialDigest;
-
-    if (!credential) {
-      throw new Error('凭证信息不存在');
-    }
-
-    // 从凭证中提取必要参数
-    const issuerDid = credential.issuer || '';
-    const vcId = credential.id || '';
-    const proofValue = credential.proof?.proofValue || '';
-    const verificationMethod = credential.proof?.verificationMethod || '';
-
-    // 从 verificationMethod 中提取 keyIndex
-    // 例如: "did:gxdid:ecdbeb0caa284b4b88a8632dc64ab1fe#keys-1" => 1
-    let keyIndex: number | undefined = undefined; // 默认值
-    if (verificationMethod) {
-      const match = verificationMethod.match(/#keys-(\d+)/);
-      if (match && match[1]) {
-        const parsed = parseInt(match[1], 10);
-        if (!isNaN(parsed)) {
-          keyIndex = parsed;
-        }
-      }
-    }
-
-    // 构建请求参数
-    const params = {
-      issuerDid,
-      proofValue,
-      digest: hash,
-      keyIndex,
-      vcHash: credentialStore.vcHash,
-      vcId
-    };
-
-    console.log('result----------1', params);
-
-    // 调用验证接口
-    const result = await verifyVC(params);
-
-    console.log('result----------2', result);
-
-    // 使用后端返回的流水号和时间
-    verifySerialNumber.value = result.serialNumber;
-    verifyTime.value = result.verifyTime;
-
-    return '';
-  } catch (error) {
-    console.error('VC 验证失败:', error);
-    uni.showToast({
-      title: '验证失败，请重试',
-      icon: 'none',
-      duration: 2000
-    });
-    return false;
-  }
-};
-
-/** 模拟验证过程 */
-const startVerification = async () => {
-  const verificationSuccess = true;
-
-  for (let i = 0; i < verifyItems.value.length; i++) {
-    // 设置当前项为加载中
-    verifyItems.value[i].status = 'loading';
-
-    // 模拟验证延迟（800ms - 1500ms随机）
-    await new Promise((resolve) => {
-      setTimeout(resolve, 800 + Math.random() * 700);
-    });
-
-    // 设置为成功
-    verifyItems.value[i].status = 'success';
-  }
-
-  // 调用后端验证接口
-  const apiSuccess = await callVerifyAPI();
-  console.log('apiSuccess', apiSuccess);
-  // if (!apiSuccess) {
-  //   verificationSuccess = false;
-  // }
-
-  // 模拟验证成功或失败（可以根据实际情况修改）
-  // verificationSuccess = Math.random() > 0.3; // 70% 成功率用于测试
-
-  // 设置验证状态到 store
-  credentialStore.setVerificationStatus(verificationSuccess);
-
-  if (verificationSuccess) {
-    // 验证成功
-    allVerified.value = true;
-    verifySerialNumber.value = generateSerialNumber();
-    verifyTime.value = getCurrentTime();
-
-    // 延迟跳转到信息填写页面
-    setTimeout(() => {
-      uni.redirectTo({
-        url: '/pages/home/CredentialInfo'
-      });
-    }, 2000);
-  } else {
-    // 验证失败
-    allVerified.value = false;
-
-    // 重置所有验证项状态
-    verifyItems.value.forEach((item) => {
-      item.status = 'pending';
-    });
-
-    // 显示失败提示
-    uni.showToast({
-      title: '凭证验证失败',
-      icon: 'none',
-      duration: 2000
-    });
-
-    // 延迟跳转到信息填写页面（手动填写）
-    setTimeout(() => {
-      uni.redirectTo({
-        url: '/pages/home/CredentialInfo'
-      });
-    }, 2000);
-  }
-};
-
-onMounted(() => {
-  startVerification();
+// 检查是否所有验证项都已完成（成功或失败）
+const allItemsComplete = computed(() => {
+  return verifyItems.value.every(
+    (item) => item.status === 'success' || item.status === 'error' || item.status === 'stopped'
+  );
 });
+
+// 检查是否所有验证项都成功
+const allItemsSuccess = computed(() => {
+  return verifyItems.value.every((item) => item.status === 'success');
+});
+
+// 标题显示
+const headerTitle = computed(() => {
+  if (allItemsComplete.value && allItemsSuccess.value) {
+    return '验证成功';
+  } else if (verifyError.value && allItemsComplete.value) {
+    return '验证失败';
+  }
+  return '正在验证';
+});
+
+// 标题颜色类
+const headerTitleClass = computed(() => {
+  if (allItemsComplete.value && allItemsSuccess.value) {
+    return 'header-title-success';
+  } else if (verifyError.value && allItemsComplete.value) {
+    return 'header-title-error';
+  }
+  return 'header-title-loading';
+});
+
+// Modal 显示控制
+const showFailModal = ref(false);
+
+// 监听验证失败，显示 modal
+watch(
+  () => verificationStore.verifyError,
+  (error) => {
+    if (error && !verificationStore.allVerified) {
+      showFailModal.value = true;
+    }
+  }
+);
+
+// 监听验证成功，延迟跳转
+watch(
+  () => allItemsComplete.value && allItemsSuccess.value,
+  (isSuccess) => {
+    if (isSuccess) {
+      // 验证成功后 2 秒跳转到信息输入页面
+      setTimeout(() => {
+        uni.redirectTo({
+          url: '/pages/home/CredentialInfo'
+        });
+      }, 2000);
+    }
+  }
+);
+
+/** 处理 Modal 确认按钮 */
+const handleModalConfirm = () => {
+  showFailModal.value = false;
+  uni.redirectTo({
+    url: '/pages/home/CredentialInfo'
+  });
+};
+
+/** 处理 Modal 取消按钮 */
+const handleModalCancel = () => {
+  showFailModal.value = false;
+};
+
+/** 拉起小程序 */
+const handleLaunchMiniProgram = () => {
+  credentialStore.launchMiniProgram();
+};
+
+/** 处理取消按钮，返回首页 */
+const handleCancel = () => {
+  uni.reLaunch({
+    url: '/pages/home/Index'
+  });
+};
 </script>
 
 <style scoped lang="scss">
@@ -252,6 +198,9 @@ onMounted(() => {
 
 .header-icon-wrapper {
   margin-bottom: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-icon {
@@ -290,8 +239,20 @@ onMounted(() => {
 .header-title {
   font-size: 40rpx;
   font-weight: 600;
-  color: #333;
   margin-bottom: 8rpx;
+  text-align: center;
+}
+
+.header-title-success {
+  color: #52c41a;
+}
+
+.header-title-error {
+  color: #ff4d4f;
+}
+
+.header-title-loading {
+  color: #333;
 }
 
 .header-subtitle {
@@ -344,6 +305,76 @@ onMounted(() => {
   border-bottom: 3rpx solid #ffffff;
   transform: rotate(-45deg);
   margin-top: -4rpx;
+}
+
+// 错误状态：红色圆圈带白色叉
+.error-circle {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: #ff4d4f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.error-cross {
+  width: 20rpx;
+  height: 20rpx;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16rpx;
+    height: 2rpx;
+    background: #ffffff;
+    border-radius: 1rpx;
+  }
+
+  &::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  &::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+}
+
+// 停止状态：红色圆圈带白色感叹号
+.stopped-circle {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: #ff4d4f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.stopped-exclamation {
+  width: 4rpx;
+  height: 20rpx;
+  background: #ffffff;
+  border-radius: 2rpx;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8rpx;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4rpx;
+    height: 4rpx;
+    background: #ffffff;
+    border-radius: 50%;
+  }
 }
 
 // 加载中状态：灰色圆形箭头（旋转）
@@ -409,23 +440,7 @@ onMounted(() => {
   }
 }
 
-// 验证成功卡片
-.verify-success-card {
-  background: linear-gradient(135deg, #f6ffed 0%, #e6fffb 100%);
-  border-radius: 16rpx;
-  padding: 40rpx 32rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 0 4rpx 16rpx rgba(82, 196, 26, 0.15);
-  border: 2rpx solid #b7eb8f;
-  margin-top: 24rpx;
-}
-
-.success-icon-wrapper {
-  margin-bottom: 20rpx;
-}
-
+// 成功图标背景（用于标题部分）
 .success-icon-bg {
   width: 80rpx;
   height: 80rpx;
@@ -447,44 +462,6 @@ onMounted(() => {
   margin-top: -6rpx;
 }
 
-.success-title {
-  font-size: 36rpx;
-  font-weight: 600;
-  color: #52c41a;
-  margin-bottom: 24rpx;
-}
-
-.success-info {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8rpx;
-}
-
-.info-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 12rpx;
-}
-
-.info-label {
-  font-size: 24rpx;
-  color: #52c41a;
-  opacity: 0.7;
-  flex-shrink: 0;
-}
-
-.info-value {
-  font-size: 24rpx;
-  color: #52c41a;
-  font-weight: 500;
-  word-break: break-all;
-  text-align: left;
-  flex: 1;
-}
-
 @keyframes successPop {
   0% {
     transform: scale(0);
@@ -497,5 +474,152 @@ onMounted(() => {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+// 失败图标背景（用于标题部分）
+.error-icon-bg {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: #ff4d4f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(255, 77, 79, 0.3);
+  animation: errorPop 0.5s ease-out;
+}
+
+.error-cross-large {
+  width: 40rpx;
+  height: 40rpx;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 32rpx;
+    height: 4rpx;
+    background: #ffffff;
+    border-radius: 2rpx;
+  }
+
+  &::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  &::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+}
+
+// 错误提示容器（用于标题下方）
+.error-tip-wrapper {
+  margin-top: 24rpx;
+  padding: 24rpx 32rpx;
+  background: rgba(255, 77, 79, 0.1);
+  border: 2rpx solid #ff4d4f;
+  border-radius: 12rpx;
+  text-align: center;
+  line-height: 1.8;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.error-tip-text {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.8;
+}
+
+.error-tip-link {
+  font-size: 28rpx;
+  color: #1890ff;
+  line-height: 1.8;
+  text-decoration: underline;
+  text-underline-offset: 2rpx;
+
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// 取消按钮样式
+.cancel-button-wrapper {
+  margin-top: 24rpx;
+  width: 100%;
+}
+
+.cancel-button {
+  width: 100%;
+  height: 88rpx;
+  background: #ff4d4f;
+  border: none;
+  border-radius: 12rpx;
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  &:active {
+    background: #ff7875;
+    opacity: 0.9;
+  }
+}
+
+.error-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.error-message {
+  font-size: 28rpx;
+  color: #ff4d4f;
+  text-align: center;
+  line-height: 1.6;
+}
+
+@keyframes errorPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Modal 内容样式
+.modal-content {
+  padding: 20rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+}
+
+// 验证失败时的底部按钮
+.fail-action-button {
+  margin-top: 24rpx;
+  padding: 0;
 }
 </style>
