@@ -72,7 +72,7 @@
     </view>
 
     <!-- 验证失败跳转提示 Modal -->
-    <up-modal
+    <!-- <up-modal
       :show="showFailModal"
       title="提示"
       :showCancelButton="true"
@@ -85,7 +85,7 @@
       <view class="modal-content">
         <text>即将跳转至信息输入界面</text>
       </view>
-    </up-modal>
+    </up-modal> -->
   </PageContainer>
 </template>
 
@@ -161,18 +161,18 @@ watch(
   }
 );
 
-/** 处理 Modal 确认按钮 */
-const handleModalConfirm = () => {
-  showFailModal.value = false;
-  uni.redirectTo({
-    url: '/pages/home/CredentialInfo'
-  });
-};
+// /** 处理 Modal 确认按钮 */
+// const handleModalConfirm = () => {
+//   showFailModal.value = false;
+//   uni.redirectTo({
+//     url: '/pages/home/CredentialInfo'
+//   });
+// };
 
-/** 处理 Modal 取消按钮 */
-const handleModalCancel = () => {
-  showFailModal.value = false;
-};
+// /** 处理 Modal 取消按钮 */
+// const handleModalCancel = () => {
+//   showFailModal.value = false;
+// };
 
 /** 拉起小程序 */
 const handleLaunchMiniProgram = () => {

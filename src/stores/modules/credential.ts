@@ -3,7 +3,6 @@ import { ref, computed } from 'vue';
 import { jsonStrSort } from '@/utils';
 import sm3 from '@/utils/sm-crypto/sm3';
 import { useVerificationStore } from './verification';
-
 // 小程序配置常量
 const MINI_APP_ID = 'gh_1a9fe4ccb8ba';
 const MINI_APP_PATH = '/pages/auth/authApp';

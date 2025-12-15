@@ -39,32 +39,32 @@
       <view class="bg-white rounded-lg p-4 shadow-sm flex flex-col gap-2">
         <view v-if="isVerified" class="info-item flex flex-row items-center py-1 item-border">
           <text class="form-label">凭证编号</text>
-          <input v-model="formData.credentialId" type="text" class="form-input" placeholder="请输入" />
+          <up-input v-model="formData.credentialId" placeholder="" :disabled="true" class="form-input" />
         </view>
         <view class="info-item flex flex-row items-center py-1 item-border">
           <text class="form-label">
             <text class="required-star">*</text>
             手机号
           </text>
-          <input v-model="formData.phone" type="text" class="form-input" placeholder="请输入" />
+          <up-input v-model="formData.phone" placeholder="" :disabled="true" class="form-input" />
         </view>
         <view class="info-item flex flex-row items-center py-1 item-border">
           <text class="form-label">
             <text class="required-star">*</text>
             姓名
           </text>
-          <input v-model="formData.name" type="text" class="form-input" placeholder="请输入" />
+          <up-input v-model="formData.name" placeholder="" :disabled="true" class="form-input" />
         </view>
         <view class="info-item flex flex-row items-center py-1" :class="{ 'item-border': isVerified }">
           <text class="form-label">
             <text class="required-star">*</text>
             在网时长
           </text>
-          <input v-model="formData.networkDuration" type="text" class="form-input" placeholder="请输入" />
+          <up-input v-model="formData.networkDuration" placeholder="" :disabled="true" class="form-input" />
         </view>
         <view v-if="isVerified" class="info-item flex flex-row items-center py-1">
           <text class="form-label">签发方</text>
-          <input v-model="formData.issuer" type="text" class="form-input" placeholder="请输入" />
+          <up-input v-model="formData.issuer" placeholder="" :disabled="true" class="form-input" />
         </view>
       </view>
 
@@ -72,15 +72,15 @@
       <view v-if="isVerified" class="bg-white rounded-lg p-4 shadow-sm flex flex-col gap-2 mt-3">
         <view class="info-item flex flex-row items-center py-1 item-border">
           <text class="form-label">凭证有效期限</text>
-          <input v-model="formData.validPeriod" type="text" class="form-input" placeholder="请输入" />
+          <up-input v-model="formData.validPeriod" placeholder="" :disabled="true" class="form-input" />
         </view>
         <view class="info-item flex flex-row items-center py-1 item-border">
           <text class="form-label">凭证签发日期</text>
-          <input v-model="formData.issuedDate" type="text" class="form-input" placeholder="请输入" />
+          <up-input v-model="formData.issuedDate" placeholder="" :disabled="true" class="form-input" />
         </view>
         <view class="info-item flex flex-row items-center py-1">
           <text class="form-label">凭证失效日期</text>
-          <input v-model="formData.expiryDate" type="text" class="form-input" placeholder="请输入" />
+          <up-input v-model="formData.expiryDate" placeholder="" :disabled="true" class="form-input" />
         </view>
       </view>
 
@@ -95,7 +95,7 @@
           loadingText="提交中..."
           @click="handleConfirm"
         >
-          确认提交
+          提交
         </up-button>
       </view>
 
@@ -120,12 +120,12 @@
       :show="showApplyModal"
       title="提示"
       :showCancelButton="false"
-      confirmText="确认"
+      confirmText="知道了"
       confirmColor="#db0011"
       @confirm="handleModalConfirm"
     >
       <view class="modal-content">
-        <text>账户正在申请中</text>
+        <text>申请已提交，正在开立账户。</text>
       </view>
     </up-modal>
   </PageContainer>
@@ -434,15 +434,25 @@ const handleModalConfirm = () => {
 
 .form-input {
   flex: 1;
-  height: 80rpx;
-  padding: 0 24rpx;
-  border-radius: 8rpx;
-  font-size: 28rpx;
-  color: #000;
-  font-weight: 500;
 
-  &:disabled {
-    color: #999;
+  // up-input 组件样式覆盖
+  :deep(.up-input) {
+    height: 80rpx;
+    font-size: 28rpx;
+    color: #000;
+    font-weight: 500;
+  }
+
+  :deep(.up-input__input) {
+    font-size: 28rpx;
+    color: #000;
+    font-weight: 500;
+  }
+
+  :deep(.up-input--disabled) {
+    .up-input__input {
+      color: #999;
+    }
   }
 }
 
