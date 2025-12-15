@@ -1,21 +1,43 @@
-import { onShow } from '@dcloudio/uni-app';
-
 export interface ClipboardCheckOptions {
   onMatch?: (text: string) => void;
-  title?: string;
-  content?: string;
-  confirmText?: string;
-  cancelText?: string;
 }
 
+/**
+ * 静默清空剪贴板（不弹出"已复制"提示）
+ */
+export const clearClipboardSilently = async (): Promise<void> => {
+  try {
+    const systemInfo = uni.getSystemInfoSync();
+    if (systemInfo.platform === 'android' && typeof plus !== 'undefined') {
+      const main: any = plus.android.runtimeMainActivity();
+      const Context: any = plus.android.importClass('android.content.Context');
+      const clipboard: any = main.getSystemService(Context.CLIPBOARD_SERVICE);
+      const ClipData: any = plus.android.importClass('android.content.ClipData');
+      const emptyClip: any = ClipData.newPlainText('label', '');
+      plus.android.invoke(clipboard, 'setPrimaryClip', emptyClip);
+      return;
+    }
+
+    if (systemInfo.platform === 'ios' && typeof plus !== 'undefined') {
+      const UIPasteboard = plus.ios.importClass('UIPasteboard');
+      const pasteboard = UIPasteboard.generalPasteboard();
+      pasteboard.setValueforPasteboardType('', 'public.utf8-plain-text');
+      // 防止内存泄漏
+      plus.ios.deleteObject(pasteboard);
+      return;
+    }
+
+    // H5 或其他平台尝试使用 Clipboard API
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText('');
+    }
+  } catch (err) {
+    console.warn('清空剪贴板失败（已忽略）：', err);
+  }
+};
+
 export function useClipboardCheck(options: ClipboardCheckOptions = {}) {
-  const {
-    onMatch,
-    title = '提示',
-    content = '检测到手机号档案凭证，是否导入？',
-    confirmText = '导入',
-    cancelText = '取消'
-  } = options;
+  const { onMatch } = options;
 
   /**
    * Android Native 检测逻辑 (已修复反射调用问题)
@@ -26,23 +48,14 @@ export function useClipboardCheck(options: ClipboardCheckOptions = {}) {
 
       const main: any = plus.android.runtimeMainActivity();
       const Context: any = plus.android.importClass('android.content.Context');
-      // 获取剪贴板服务对象
-
       const clipboard: any = main.getSystemService(Context.CLIPBOARD_SERVICE);
 
-      /**
-       * 修复点：使用 plus.android.invoke 反射调用
-       * 解决 "clipboard.hasPrimaryClip is not a function" 报错
-       */
       const hasClip = plus.android.invoke(clipboard, 'hasPrimaryClip');
-
       if (!hasClip) return false;
 
-      // 获取 ClipDescription
       const description = plus.android.invoke(clipboard, 'getPrimaryClipDescription');
       const ClipDescription: any = plus.android.importClass('android.content.ClipDescription');
 
-      // 继续使用 invoke 检查 MIME 类型，确保稳健性
       const hasPlain = plus.android.invoke(description, 'hasMimeType', ClipDescription.MIMETYPE_TEXT_PLAIN);
       const hasHtml = plus.android.invoke(description, 'hasMimeType', ClipDescription.MIMETYPE_TEXT_HTML);
 
@@ -70,15 +83,27 @@ export function useClipboardCheck(options: ClipboardCheckOptions = {}) {
     }
   };
 
-  const readClipboard = (): void => {
+  /**
+   * 读取剪贴板并触发回调（会清空剪贴板）
+   */
+  const readClipboard = (presetText?: string): void => {
+    const handleData = (text: string) => {
+      if (!text) return;
+      if (typeof onMatch === 'function') {
+        onMatch(text);
+      }
+      // 处理完成后立即清空剪贴板，避免重复弹窗
+      clearClipboardSilently();
+    };
+
+    if (typeof presetText === 'string') {
+      handleData(presetText);
+      return;
+    }
+
     uni.getClipboardData({
       success: (res) => {
-        // console.log('剪贴板读取成功:', res.data);
-        if (typeof onMatch === 'function' && res.data) {
-          onMatch(res.data);
-        }
-        // 读取后清空，避免重复弹窗 (可选)
-        // uni.setClipboardData({ data: '' });
+        handleData(res.data);
       },
       fail: (err) => {
         console.error('剪贴板读取失败', err);
@@ -86,38 +111,48 @@ export function useClipboardCheck(options: ClipboardCheckOptions = {}) {
     });
   };
 
-  const checkAndPrompt = (): void => {
-    const systemInfo = uni.getSystemInfoSync();
-    let hasContent = false;
+  /**
+   * 读取当前剪贴板文本，读取后立即清空剪贴板，避免重复弹窗
+   * 由调用方决定后续行为（显示弹窗等）
+   */
+  const getClipboardTextIfNew = (): Promise<string | null> => {
+    return new Promise((resolve) => {
+      const systemInfo = uni.getSystemInfoSync();
+      let hasContent = false;
 
-    if (systemInfo.platform === 'android') {
-      hasContent = androidHasClipText();
-    } else if (systemInfo.platform === 'ios') {
-      hasContent = iosHasClipText();
-    }
-
-    if (!hasContent) return;
-
-    uni.showModal({
-      title,
-      content,
-      cancelText,
-      confirmText,
-      success: (res) => {
-        if (res.confirm) {
-          readClipboard();
-        }
+      if (systemInfo.platform === 'android') {
+        hasContent = androidHasClipText();
+      } else if (systemInfo.platform === 'ios') {
+        hasContent = iosHasClipText();
       }
+
+      if (!hasContent) {
+        resolve(null);
+        return;
+      }
+
+      uni.getClipboardData({
+        success: (clip) => {
+          const currentText = clip.data || '';
+          if (!currentText) {
+            resolve(null);
+            return;
+          }
+          // 读取后立即清空剪贴板，避免重复检测
+          clearClipboardSilently();
+          resolve(currentText);
+        },
+        fail: (err) => {
+          console.error('剪贴板读取失败', err);
+          resolve(null);
+        }
+      });
     });
   };
 
-  onShow(() => {
-    // #ifdef APP-PLUS
-    // checkAndPrompt();
-    // #endif
-  });
-
   return {
-    checkAndPrompt
+    getClipboardTextIfNew,
+    readClipboard,
+    clearClipboardSilently
   };
 }

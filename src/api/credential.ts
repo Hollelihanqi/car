@@ -76,7 +76,6 @@ export interface MobileCheckResponse {
 
 /**
  * 调用正方 VC 验证接口
- * POST http://10.0.48.22:9011/invoke/app/did/verify
  * @param params 验证参数
  * @returns 验证结果
  */

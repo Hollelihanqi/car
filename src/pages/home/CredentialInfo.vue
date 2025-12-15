@@ -37,7 +37,7 @@
       </view>
       <!-- 凭证主要信息卡片 -->
       <view class="bg-white rounded-lg p-4 shadow-sm flex flex-col gap-2">
-        <view v-if="isVerified" class="info-item flex flex-row items-center py-1 item-border">
+        <view class="info-item flex flex-row items-center py-1 item-border">
           <text class="form-label">凭证编号</text>
           <up-input v-model="formData.credentialId" placeholder="" :disabled="true" class="form-input" />
         </view>
@@ -62,14 +62,14 @@
           </text>
           <up-input v-model="formData.networkDuration" placeholder="" :disabled="true" class="form-input" />
         </view>
-        <view v-if="isVerified" class="info-item flex flex-row items-center py-1">
+        <view class="info-item flex flex-row items-center py-1">
           <text class="form-label">签发方</text>
           <up-input v-model="formData.issuer" placeholder="" :disabled="true" class="form-input" />
         </view>
       </view>
 
       <!-- 时间信息卡片 -->
-      <view v-if="isVerified" class="bg-white rounded-lg p-4 shadow-sm flex flex-col gap-2 mt-3">
+      <view class="bg-white rounded-lg p-4 shadow-sm flex flex-col gap-2 mt-3">
         <view class="info-item flex flex-row items-center py-1 item-border">
           <text class="form-label">凭证有效期限</text>
           <up-input v-model="formData.validPeriod" placeholder="" :disabled="true" class="form-input" />
@@ -140,7 +140,6 @@ import { Base64, Utf8 } from '@/utils/aes';
 
 const credentialStore = useCredentialStore();
 const loading = ref(false);
-
 // 验证状态：null-未验证, 'success'-成功, 'error'-失败
 const verifyStatus = ref<'success' | 'error' | null>(null);
 

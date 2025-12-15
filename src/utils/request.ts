@@ -20,9 +20,9 @@ interface RequestResponse<T = any> {
 }
 
 // 基础配置
-const BASE_URL = 'http://10.0.48.22:9011'; // VC验证接口的 baseURL
+const BASE_URL = 'http://60.247.61.162:12200'; // VC验证接口的 baseURL
 export const BASE_URL_MOBILE = 'http://10.0.158.84:9005'; // 手机号验证接口的 baseURL
-const TIMEOUT = 360000; // 120秒超时
+const TIMEOUT = 720000; // 120秒超时
 export const DEFAULT_AUTHORIZATION =
   'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcGVuZGlkIiwiaWF0IjoxNzY1MjU3NzcxfQ.ksbETIMO7dUFAwbQIr_e7cKTHNM662W5DFbF6NcajQs'; // VC验证接口的 Authorization
 export const MOBILE_AUTHORIZATION =
