@@ -36,7 +36,7 @@
         </view>
 
         <!-- 成功标题 -->
-        <text class="success-title">已成功获取手机号凭证信息</text>
+        <text class="success-title">已成功获取手机号档案凭证</text>
       </view>
     </view>
   </PageContainer>

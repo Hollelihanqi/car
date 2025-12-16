@@ -83,12 +83,13 @@ export const useCredentialStore = defineStore(
     // ==================== Actions ====================
 
     /**
-     * 解析凭证参数
-     * 支持格式：{data: string | object, status: number}
-     * - data: 凭证信息（JSON 字符串或对象），认证成功才会有值
-     * - status: 0 取消认证, 1 认证成功, 2 认证失败
+     * 处理凭证数据，支持两种数据模型
+     * 1. 直接是凭证对象：{"credentialSchema": {...}, "credentialSubject": {...}, ...}
+     * 2. 包含 data 字段：{"data": {...}, "status": 1}
+     * @param raw - 原始数据（字符串或对象）
+     * @returns 处理后的凭证对象，如果格式不正确返回 null
      */
-    const parseCredentialArgs = (raw: string | Record<string, any>): CredentialInfo | null => {
+    const processCredentialData = (raw: string | Record<string, any>): CredentialInfo | null => {
       try {
         let parsed: any;
 
@@ -103,44 +104,39 @@ export const useCredentialStore = defineStore(
           return null;
         }
 
-        // 3. 检查是否是新格式（包含 data 和 status 字段）
-        if (parsed && typeof parsed === 'object' && 'data' in parsed && 'status' in parsed) {
-          const response = parsed as CredentialResponse;
+        if (!parsed || typeof parsed !== 'object') {
+          return null;
+        }
 
-          // 检查认证状态：只有 status == 1（认证成功）时才处理
-          if (response.status != 1) {
-            console.warn(`认证未成功，status: ${response.status} (0=取消, 1=成功, 2=失败)`);
+        // 3. 检查是否是包含 data 字段的格式
+        if ('data' in parsed && parsed.data !== null && parsed.data !== undefined) {
+          // 提取 data 字段
+          let credentialData: any;
+          if (typeof parsed.data === 'string' && parsed.data) {
+            // data 是字符串类型，需要解析
+            try {
+              credentialData = JSON.parse(parsed.data);
+            } catch (error) {
+              console.error('解析 data 字段中的 JSON 失败:', error);
+              return null;
+            }
+          } else if (typeof parsed.data === 'object') {
+            // data 已经是对象类型，直接使用
+            credentialData = parsed.data;
+          } else {
             return null;
           }
 
-          // data 字段可能是字符串或对象，需要分别处理
-          if (typeof response.data === 'string' && response.data) {
-            // data 是字符串类型，需要解析
-            try {
-              const credentialData = JSON.parse(response.data);
-              if (credentialData && typeof credentialData === 'object') {
-                console.log('从 data 字段提取凭证数据（认证成功，字符串格式）');
-                return credentialData as CredentialInfo;
-              }
-            } catch (parseError) {
-              console.error('解析 data 字段中的 JSON 失败:', parseError);
-              return null;
-            }
-          } else if (typeof response.data === 'object' && response.data !== null) {
-            // data 已经是对象类型，直接使用
-            console.log('从 data 字段提取凭证数据（认证成功，对象格式）');
-            return response.data as CredentialInfo;
-          } else {
-            console.warn('data 字段为空或格式不正确');
-            return null;
+          // 返回凭证对象
+          if (credentialData && typeof credentialData === 'object') {
+            return credentialData as CredentialInfo;
           }
         }
 
-        // 如果不是新格式，返回 null
-        console.warn('凭证格式不正确：缺少 data 或 status 字段');
-        return null;
+        // 4. 如果不是包含 data 字段的格式，直接返回（可能是直接的凭证对象）
+        return parsed as CredentialInfo;
       } catch (error) {
-        console.error('parse credential args error', error);
+        console.error('处理凭证数据出错:', error);
         return null;
       }
     };
@@ -239,7 +235,7 @@ export const useCredentialStore = defineStore(
       logPrefix: string = '凭证'
     ): Promise<CredentialInfo | null> => {
       console.log(`开始处理${logPrefix}参数:`, args);
-      const credential = parseCredentialArgs(args);
+      const credential = processCredentialData(args);
 
       if (!credential) {
         console.error('凭证解析结果为空');
@@ -364,7 +360,7 @@ export const useCredentialStore = defineStore(
       isVerified,
       isVerificationFailed,
       // Actions
-      parseCredentialArgs,
+      processCredentialData,
       handleCredentialArgs,
       handleClipboardCredential,
       saveCredential,

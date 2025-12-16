@@ -2,7 +2,7 @@
  * @Author: git.name
  * @Date: 2025-12-10
  * @LastEditors: git.name
- * @LastEditTime: 2025-12-10
+ * @LastEditTime: 2025-12-16 15:05:32
  * @Description: 开立账户页面
 -->
 <template>
@@ -42,7 +42,7 @@
             </view>
             <view class="feature-item">
               <view class="feature-icon">
-                <u-icon name="file-text" size="28" color="#db0011"></u-icon>
+                <up-icon name="coupon-fill" size="28" color="#db0011"></up-icon>
               </view>
               <text class="feature-label">仅须经场换银行业务</text>
             </view>
@@ -50,7 +50,7 @@
               <view class="feature-icon">
                 <u-icon name="shopping-cart" size="28" color="#db0011"></u-icon>
               </view>
-              <text class="feature-label">财富管理试心维护</text>
+              <text class="feature-label">财富管理精心推荐</text>
             </view>
           </view>
         </view>
@@ -76,7 +76,7 @@
             </view>
             <view class="feature-item">
               <view class="feature-icon">
-                <u-icon name="shop" size="28" color="#db0011"></u-icon>
+                <u-icon name="rmb-circle" size="28" color="#db0011"></u-icon>
               </view>
               <text class="feature-label">物资产品资金资财</text>
             </view>

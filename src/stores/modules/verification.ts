@@ -5,7 +5,7 @@ import { verifyVC } from '@/api/credential';
 
 export interface VerifyItem {
   label: string;
-  status: 'pending' | 'loading' | 'success' | 'error' | 'stopped';
+  status: 'pending' | 'loading' | 'success' | 'error' | 'stopped' | 'api-error';
   expectedResult: string;
   errorMessage?: string;
 }
@@ -27,6 +27,7 @@ export const useVerificationStore = defineStore(
     const verifySerialNumber = ref('');
     const verifyTime = ref('');
     const isVerifying = ref(false);
+    const isApiError = ref(false); // 标识是否为 API 调用错误
 
     // ==================== Getters ====================
     const isVerificationComplete = computed(() => {
@@ -178,7 +179,10 @@ export const useVerificationStore = defineStore(
     /** 逐步更新验证项状态，每项之间有延迟 */
     const updateVerifyItemsStatusGradually = async (result: string) => {
       const itemsStatus = calculateVerifyItemsStatus(result);
-      const allSuccess = itemsStatus.every((item) => item.status === 'success') && result === 'HashMatched';
+      // 当返回 HashMatched 或 VCStatusNormal 时，认为验证成功
+      const allSuccess =
+        itemsStatus.every((item) => item.status === 'success') &&
+        (result === 'HashMatched' || result === 'VCStatusNormal');
       const firstErrorIndex = itemsStatus.findIndex((item) => item.status === 'error');
 
       // itemsStatus 的索引映射（基于旧的验证顺序：签发者->所有者->签名->有效期->吊销状态）
@@ -270,7 +274,7 @@ export const useVerificationStore = defineStore(
           proofValue,
           digest: hash,
           keyIndex,
-          vcHash: credentialStore.vcHash,
+          // vcHash: credentialStore.vcHash,
           vcId
         };
 
@@ -289,11 +293,13 @@ export const useVerificationStore = defineStore(
         }
       } catch (error: any) {
         console.error('VC 验证失败:', error);
-        // 如果有效期验证还没完成或失败，设置其他验证项为错误状态
+        // 标记为 API 调用错误，不显示错误提示文字
+        isApiError.value = true;
+        // 如果有效期验证还没完成或失败，设置其他验证项为 API 错误状态（灰色图标）
         if (verifyItems.value[0].status === 'loading' || verifyItems.value[0].status === 'success') {
           verifyItems.value.forEach((item, index) => {
             if (index > 0 && item.status !== 'stopped') {
-              item.status = 'error';
+              item.status = 'api-error';
             }
           });
         }
@@ -316,17 +322,18 @@ export const useVerificationStore = defineStore(
         allVerified.value = false; // 重置验证成功状态
         verifySerialNumber.value = '';
         verifyTime.value = '';
+        isApiError.value = false; // 重置 API 错误标志
 
         // 先立即验证凭证有效期
         const validityResult = verifyCredentialValidity();
         verifyItems.value[0].status = validityResult.status;
         verifyItems.value[0].errorMessage = validityResult.message;
 
-        // 如果有效期验证失败，设置后续项为停止状态
+        // 如果有效期验证失败，设置后续项为灰色图标状态
         if (validityResult.status === 'error') {
           verifyError.value = validityResult.message;
           for (let j = 1; j < verifyItems.value.length; j++) {
-            verifyItems.value[j].status = 'stopped';
+            verifyItems.value[j].status = 'api-error';
           }
           allVerified.value = false;
           const credentialStore = useCredentialStore();
@@ -355,6 +362,7 @@ export const useVerificationStore = defineStore(
       verifySerialNumber.value = '';
       verifyTime.value = '';
       isVerifying.value = false;
+      isApiError.value = false; // 重置 API 错误标志
     };
 
     return {
@@ -365,6 +373,7 @@ export const useVerificationStore = defineStore(
       verifySerialNumber,
       verifyTime,
       isVerifying,
+      isApiError,
       // Getters
       isVerificationComplete,
       // Actions

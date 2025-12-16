@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { onLaunch, onShow, onHide } from '@dcloudio/uni-app';
 import { useCredentialStore, useVerificationStore } from '@/stores';
-import { useCredentialClipboard } from '@/hooks/useCredentialClipboard';
+// import { useCredentialClipboard } from '@/hooks/useCredentialClipboard';
+import { useCredentialClipboard } from '@/hooks/useCredentialClipboard2';
 const credentialStore = useCredentialStore();
 const verificationStore = useVerificationStore();
 
-// 初始化凭证剪贴板检测，自动弹窗提示
+// 初始化检测 Hook
 const { checkCredentialClipboard } = useCredentialClipboard({
+  // 关键：跳过第一次（启动页期间不弹窗）
+  skipFirstCheck: true,
+
+  // 验证通过后的回调
   onMatch: (text) => {
-    console.log('[Clipboard] 检测到凭证，开始处理:', text);
-    // 将剪贴板内容交给凭证处理逻辑（使用剪切板专用函数，直接跳转）
+    console.log('[Clipboard] 校验通过，开始导入');
     credentialStore.handleClipboardCredential(text);
   }
 });
@@ -24,11 +28,6 @@ onLaunch(() => {
 
 onShow(async () => {
   console.log('App Show');
-
-  // 检查剪贴板是否有凭证内容
-  setTimeout(() => {
-    checkCredentialClipboard();
-  }, 500);
 
   // #ifdef APP-PLUS
   const args: any = plus.runtime.arguments;
@@ -54,6 +53,11 @@ onShow(async () => {
     return;
   }
   // #endif
+
+  // 检查剪贴板是否有凭证内容
+  setTimeout(() => {
+    checkCredentialClipboard();
+  }, 300);
 });
 
 onHide(() => {
