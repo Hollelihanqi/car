@@ -33,6 +33,20 @@
 			}
 		},
 		{
+			"path": "pages/premier/Index",
+			"style": {
+				"navigationBarTitleText": "汇丰中国",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/account-apply/Index",
+			"style": {
+				"navigationBarTitleText": "开户申请",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/auth/auth-login",
 			"style": {
 				"navigationBarTitleText": "授权登录"

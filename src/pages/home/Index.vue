@@ -2,7 +2,7 @@
  * @Author: git.name
  * @Date: 2025-12-03 16:57:37
  * @LastEditors: git.name
- * @LastEditTime: 2025-12-10 13:08:27
+ * @LastEditTime: 2025-12-16 16:56:27
  * @Description: 汇丰银行首页
 -->
 <template>
@@ -106,24 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { onShow } from '@dcloudio/uni-app';
-import { useCredentialClipboard } from '@/hooks/useCredentialClipboard2';
-import { useCredentialStore } from '@/stores';
-
-const credentialStore = useCredentialStore();
-
-// 首页不需要跳过第一次
-const { checkCredentialClipboard } = useCredentialClipboard({
-  skipFirstCheck: false,
-  onMatch: (text) => credentialStore.handleClipboardCredential(text)
-});
-
-onShow(() => {
-  // 首页显示后，检测一次
-  setTimeout(() => {
-    checkCredentialClipboard();
-  }, 200);
-});
+// 剪贴板检测已统一在 App.vue 中处理，此处不再需要
 
 // 快捷功能区数据
 const quickActions = [
