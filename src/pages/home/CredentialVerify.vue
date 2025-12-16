@@ -18,8 +18,8 @@
           </view>
         </view>
         <text class="header-title" :class="headerTitleClass">{{ headerTitle }}</text>
-        <!-- 验证失败时的提示文字 -->
-        <view v-if="allItemsComplete && !allItemsSuccess && verifyError" class="error-tip-wrapper">
+        <!-- 验证失败时的提示文字（API 调用错误时不显示） -->
+        <view v-if="allItemsComplete && !allItemsSuccess && verifyError && !isApiError" class="error-tip-wrapper">
           <text class="error-tip-text">请在</text>
           <text class="error-tip-link" @click="handleLaunchMiniProgram">中移可信凭证</text>
           <text class="error-tip-text">重新申请手机号档案凭证后再次尝试</text>
@@ -59,6 +59,10 @@
                 <view class="loading-circle">
                   <view class="loading-arrow"></view>
                 </view>
+              </view>
+              <!-- API 错误状态：灰色圆圈（不旋转） -->
+              <view v-else-if="item.status === 'api-error'" class="flex items-center justify-center">
+                <view class="api-error-circle"></view>
               </view>
             </view>
           </view>
@@ -100,11 +104,13 @@ const credentialStore = useCredentialStore();
 // 从 store 中获取验证状态
 const verifyItems = computed(() => verificationStore.verifyItems);
 const verifyError = computed(() => verificationStore.verifyError);
+const isApiError = computed(() => verificationStore.isApiError);
 
 // 检查是否所有验证项都已完成（成功或失败）
 const allItemsComplete = computed(() => {
   return verifyItems.value.every(
-    (item) => item.status === 'success' || item.status === 'error' || item.status === 'stopped'
+    (item) =>
+      item.status === 'success' || item.status === 'error' || item.status === 'stopped' || item.status === 'api-error'
   );
 });
 
@@ -397,6 +403,14 @@ const handleCancel = () => {
   border-left: 6rpx solid transparent;
   border-right: 6rpx solid transparent;
   border-top: 8rpx solid #999999;
+}
+
+// API 错误状态：灰色圆圈（不旋转，无箭头）
+.api-error-circle {
+  width: 40rpx;
+  height: 40rpx;
+  background: #e5e5e5;
+  border-radius: 50%;
 }
 
 // 待处理状态：刷新图标（灰色圆形箭头）

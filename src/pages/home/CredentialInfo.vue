@@ -189,6 +189,16 @@ const extractNetworkDuration = (source: Record<string, any> | undefined): string
     if (key.startsWith('在网时长') || key.startsWith('在網時長')) {
       const value = source[key];
       if (value) {
+        // 如果字段名包含条件（如 "在网时长>=1 个月"），提取条件部分
+        // 如果字段值是 "是"，则使用字段名中的条件部分
+        if (String(value) === '是' && key.includes('>=')) {
+          // 提取 ">=1 个月" 这样的条件部分
+          const match = key.match(/(>=.+)/);
+          if (match && match[1]) {
+            return match[1].trim();
+          }
+        }
+        // 否则返回字段值
         return String(value);
       }
     }
@@ -424,11 +434,17 @@ const handleModalConfirm = () => {
   font-weight: 400;
   flex-shrink: 0;
   width: 200rpx;
+  position: relative;
+  padding-left: 20rpx; // 为星号预留空间，确保文字对齐
 }
 
 .required-star {
   color: #db0011;
   font-weight: bold;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .form-input {

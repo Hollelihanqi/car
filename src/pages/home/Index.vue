@@ -106,6 +106,25 @@
 </template>
 
 <script setup lang="ts">
+import { onShow } from '@dcloudio/uni-app';
+import { useCredentialClipboard } from '@/hooks/useCredentialClipboard2';
+import { useCredentialStore } from '@/stores';
+
+const credentialStore = useCredentialStore();
+
+// 首页不需要跳过第一次
+const { checkCredentialClipboard } = useCredentialClipboard({
+  skipFirstCheck: false,
+  onMatch: (text) => credentialStore.handleClipboardCredential(text)
+});
+
+onShow(() => {
+  // 首页显示后，检测一次
+  setTimeout(() => {
+    checkCredentialClipboard();
+  }, 200);
+});
+
 // 快捷功能区数据
 const quickActions = [
   {
