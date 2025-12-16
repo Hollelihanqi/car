@@ -257,10 +257,16 @@ export const useCredentialStore = defineStore(
 
     /** 处理凭证参数，解析并保存凭证（小程序回调使用，延迟跳转） */
     const handleCredentialArgs = async (args: string): Promise<boolean> => {
+      if (!args) {
+        return false;
+      }
       const credential = await processCredentialCore(args, '凭证');
+      console.log('凭证处理完成，准备跳转验证页面', typeof args);
       if (!credential) {
         return false;
       }
+
+      console.log('凭证处理完成，准备跳转验证页面', credential);
 
       // 延迟跳转到验证页面（只有未验证且有凭证信息时才跳转）
       setTimeout(() => {

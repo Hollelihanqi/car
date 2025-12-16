@@ -34,7 +34,7 @@ export const useCredentialClipboard = (options: CredentialClipboardOptions = {})
    */
   const checkCredentialClipboard = () => {
     getClipboardTextIfNew().then((text) => {
-      if (!text) return;
+      if (!text || !isValidCredential(text)) return;
 
       // 直接显示弹窗，不做格式验证
       // 剪贴板已在 getClipboardTextIfNew 中清空，不会重复弹窗
@@ -45,15 +45,6 @@ export const useCredentialClipboard = (options: CredentialClipboardOptions = {})
         cancelText,
         success: (res) => {
           if (res.confirm) {
-            // 点击导入时进行格式验证
-            if (!isValidCredential(text)) {
-              uni.showToast({
-                title: '凭证格式不正确，无法导入',
-                icon: 'none',
-                duration: 2000
-              });
-              return;
-            }
             // 验证通过，处理凭证（readClipboard 内部会再次清空，确保清空）
             readClipboard(text);
           }

@@ -24,32 +24,35 @@ onLaunch(() => {
 
 onShow(async () => {
   console.log('App Show');
+
+  // 检查剪贴板是否有凭证内容
+  setTimeout(() => {
+    checkCredentialClipboard();
+  }, 500);
+
   // #ifdef APP-PLUS
-  const args = plus.runtime.arguments;
+  const args: any = plus.runtime.arguments;
   console.log('回调参数', args);
 
   // 获取当前页面路径
-  const pages = getCurrentPages();
-  const currentPage = pages[pages.length - 1];
-  const currentRoute = currentPage ? `/${currentPage.route}` : '';
-
-  if (!args) {
-    // 如果当前不在首页，使用 reLaunch 清空页面栈并跳转到首页
-    if (currentRoute !== '/pages/home/Index') {
-      uni.reLaunch({ url: '/pages/home/Index' });
+  // const pages = getCurrentPages();
+  // const currentPage = pages[pages.length - 1];
+  // const currentRoute = currentPage ? `/${currentPage.route}` : '';
+  if (args) {
+    try {
+      const data = JSON.parse(args);
+      const status = data.status;
+      if (status == 0 || status == 2) {
+        uni.reLaunch({ url: '/pages/home/Index' });
+      } else {
+        // 处理凭证参数
+        credentialStore.handleCredentialArgs(args);
+      }
+    } catch (error) {
+      console.error('解析认证参数失败:', error);
     }
-    // 检查剪贴板是否有凭证内容
-    setTimeout(() => {
-      checkCredentialClipboard();
-    }, 500);
     return;
   }
-
-  // 处理凭证参数
-  credentialStore.handleCredentialArgs(args);
-  // if (success) {
-  //   uni.navigateTo({ url: '/pages/home/CredentialInfo' });
-  // }
   // #endif
 });
 
