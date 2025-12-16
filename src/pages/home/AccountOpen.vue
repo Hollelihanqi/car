@@ -38,13 +38,13 @@
               <view class="feature-icon">
                 <u-icon name="account" size="28" color="#db0011"></u-icon>
               </view>
-              <text class="feature-label">线上随时自办开户</text>
+              <text class="feature-label">线上预约柜台办理</text>
             </view>
             <view class="feature-item">
               <view class="feature-icon">
                 <up-icon name="coupon-fill" size="28" color="#db0011"></up-icon>
               </view>
-              <text class="feature-label">仅须经场换银行业务</text>
+              <text class="feature-label">体验环球银行业务</text>
             </view>
             <view class="feature-item">
               <view class="feature-icon">
@@ -78,13 +78,13 @@
               <view class="feature-icon">
                 <u-icon name="rmb-circle" size="28" color="#db0011"></u-icon>
               </view>
-              <text class="feature-label">物资产品资金资财</text>
+              <text class="feature-label">购买产品即享积分</text>
             </view>
             <view class="feature-item">
               <view class="feature-icon">
                 <u-icon name="edit-pen" size="28" color="#db0011"></u-icon>
               </view>
-              <text class="feature-label">闲慎理资通周资通</text>
+              <text class="feature-label">期限灵活机制简单</text>
             </view>
           </view>
         </view>
@@ -107,19 +107,19 @@
               <view class="feature-icon">
                 <u-icon name="order" size="28" color="#db0011"></u-icon>
               </view>
-              <text class="feature-label">五秒钟完统信申请</text>
+              <text class="feature-label">五秒轻松完成申请</text>
             </view>
             <view class="feature-item">
               <view class="feature-icon">
                 <u-icon name="gift" size="28" color="#db0011"></u-icon>
               </view>
-              <text class="feature-label">尊享开卡考积利</text>
+              <text class="feature-label">尊享丰富开卡好礼</text>
             </view>
             <view class="feature-item">
               <view class="feature-icon">
                 <u-icon name="map" size="28" color="#db0011"></u-icon>
               </view>
-              <text class="feature-label">信积租纺论兑礼遇</text>
+              <text class="feature-label">玩转缤纷优惠礼遇</text>
             </view>
           </view>
         </view>

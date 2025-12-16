@@ -172,7 +172,6 @@ export const useCredentialStore = defineStore(
         }
         console.log('vcHash sortedStr', sortedStr);
         const hash = sm3(sortedStr).toUpperCase();
-        console.log('VC Hash computed:', hash);
         return hash;
       } catch (error) {
         console.error('计算 VC Hash 失败', error);
@@ -190,8 +189,6 @@ export const useCredentialStore = defineStore(
         rawCredential.value = credentialStr;
         credentialDigest.value = computeHash();
         vcHash.value = computeVcHash();
-        console.log('Credential Digest:', credentialDigest.value);
-        console.log('VC Hash:', vcHash.value);
       } catch (error) {
         console.error('计算 Credential Hash 失败', error);
       }
