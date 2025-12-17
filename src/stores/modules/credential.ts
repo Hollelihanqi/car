@@ -151,9 +151,7 @@ export const useCredentialStore = defineStore(
           console.error('JSON 排序失败');
           return '';
         }
-        console.log('sortedStr', sortedStr);
         const hash = sm3(sortedStr).toUpperCase();
-        console.log('SM3 Hash computed:', hash);
         return hash;
       } catch (error) {
         console.error('计算 SM3 Hash 失败', error);
@@ -170,9 +168,7 @@ export const useCredentialStore = defineStore(
           console.error('JSON 排序失败');
           return '';
         }
-        console.log('vcHash sortedStr', sortedStr);
         const hash = sm3(sortedStr).toUpperCase();
-        console.log('VC Hash computed:', hash);
         return hash;
       } catch (error) {
         console.error('计算 VC Hash 失败', error);
@@ -190,8 +186,6 @@ export const useCredentialStore = defineStore(
         rawCredential.value = credentialStr;
         credentialDigest.value = computeHash();
         vcHash.value = computeVcHash();
-        console.log('Credential Digest:', credentialDigest.value);
-        console.log('VC Hash:', vcHash.value);
       } catch (error) {
         console.error('计算 Credential Hash 失败', error);
       }
@@ -257,12 +251,9 @@ export const useCredentialStore = defineStore(
         return false;
       }
       const credential = await processCredentialCore(args, '凭证');
-      console.log('凭证处理完成，准备跳转验证页面', typeof args);
       if (!credential) {
         return false;
       }
-
-      console.log('凭证处理完成，准备跳转验证页面', credential);
 
       // 延迟跳转到验证页面（只有未验证且有凭证信息时才跳转）
       setTimeout(() => {

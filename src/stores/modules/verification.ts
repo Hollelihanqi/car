@@ -274,12 +274,35 @@ export const useVerificationStore = defineStore(
           proofValue,
           digest: hash,
           keyIndex,
-          // vcHash: credentialStore.vcHash,
+          vcHash: credentialStore.vcHash,
           vcId
         };
 
         console.log('验证请求参数:', params);
 
+        // ========== 演示模式：模拟接口调用 ==========
+        // 模拟接口延迟
+        // await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        // // 模拟接口返回结果（演示用）
+        // const apiResult: any = {
+        //   code: 0,
+        //   message: '',
+        //   data: {
+        //     result: 'VCStatusNormal' // 可以改为 'HashMatched' 测试完全成功的情况
+        //   }
+        // };
+
+        // console.log('验证返回结果（模拟）:', apiResult);
+
+        // // 根据接口返回的 result 逐步更新其他验证项状态
+        // if (apiResult.code === 0 && apiResult.data?.result) {
+        //   await updateVerifyItemsStatusGradually(apiResult.data.result);
+        // } else {
+        //   throw new Error(apiResult.message || '验证失败');
+        // }
+
+        // ========== 真实接口调用（原代码，已注释用于演示） ==========
         // 调用验证接口
         const apiResult: any = await verifyVC(params);
 

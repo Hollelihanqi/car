@@ -55,40 +55,54 @@ export const useCredentialClipboard = (options: CredentialClipboardOptions = {})
       return;
     }
 
-    // 2. 检查是否在 CredentialVerify 页面且正在验证
+    // 2. 检查页面栈是否已准备好（避免在启动页时检测）
     try {
       const pages = getCurrentPages();
-      if (pages.length > 0) {
-        const currentPage = pages[pages.length - 1];
-        const currentRoute = currentPage.route || '';
-        // 检查是否是验证页面
-        if (currentRoute === 'pages/home/CredentialVerify') {
-          const verificationStore = useVerificationStore();
-          // 判断是否正在验证：isVerifying 为 true 或者验证项还未全部完成
-          const isVerifying = verificationStore.isVerifying;
-          const allItemsComplete = verificationStore.verifyItems.every(
-            (item) =>
-              item.status === 'success' ||
-              item.status === 'error' ||
-              item.status === 'stopped' ||
-              item.status === 'api-error'
-          );
-          // 如果正在验证中（isVerifying 为 true 或验证项未全部完成），不显示弹窗
-          if (isVerifying || !allItemsComplete) {
-            console.log('正在验证中，跳过剪贴板检测');
-            return;
-          }
+      // 如果页面栈为空，说明还在启动页，不检测
+      if (pages.length === 0) {
+        console.log('页面栈为空（启动页），跳过剪贴板检测');
+        return;
+      }
+
+      const currentPage = pages[pages.length - 1];
+      const currentRoute = currentPage.route || '';
+
+      // 如果当前路由为空或不是有效页面，说明还在启动页，不检测
+      if (!currentRoute || currentRoute === '') {
+        console.log('当前路由为空（启动页），跳过剪贴板检测');
+        return;
+      }
+
+      // 检查是否在 CredentialVerify 页面且正在验证
+      if (currentRoute === 'pages/home/CredentialVerify') {
+        const verificationStore = useVerificationStore();
+        // 判断是否正在验证：isVerifying 为 true 或者验证项还未全部完成
+        const isVerifying = verificationStore.isVerifying;
+        const allItemsComplete = verificationStore.verifyItems.every(
+          (item) =>
+            item.status === 'success' ||
+            item.status === 'error' ||
+            item.status === 'stopped' ||
+            item.status === 'api-error'
+        );
+        // 如果正在验证中（isVerifying 为 true 或验证项未全部完成），不显示弹窗
+        if (isVerifying || !allItemsComplete) {
+          console.log('正在验证中，跳过剪贴板检测');
+          return;
         }
       }
     } catch (error) {
       console.warn('检查当前页面状态失败:', error);
+      // 如果检查失败，为了安全起见，不进行检测
+      return;
     }
 
-    // 3. 冷启动跳过逻辑
+    // 3. 冷启动跳过逻辑（如果设置了 skipFirstCheck）
     if (skipFirstCheck && isAppFirstLaunch) {
       isAppFirstLaunch = false;
       return;
     }
+    // 无论是否设置了 skipFirstCheck，都更新标志
     if (isAppFirstLaunch) isAppFirstLaunch = false;
 
     // 4. 检测是否有内容

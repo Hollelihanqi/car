@@ -37,32 +37,32 @@
       </view>
       <!-- 凭证主要信息卡片 -->
       <view class="bg-white rounded-lg p-4 shadow-sm flex flex-col gap-2">
-        <view class="info-item flex flex-row items-center py-1 item-border">
+        <view class="info-item flex flex-col py-1">
           <text class="form-label">凭证编号</text>
           <up-input v-model="formData.credentialId" placeholder="" :disabled="true" class="form-input" />
         </view>
-        <view class="info-item flex flex-row items-center py-1 item-border">
+        <view class="info-item flex flex-col py-1">
           <text class="form-label">
             <text class="required-star">*</text>
             手机号
           </text>
           <up-input v-model="formData.phone" placeholder="" :disabled="true" class="form-input" />
         </view>
-        <view class="info-item flex flex-row items-center py-1 item-border">
+        <view class="info-item flex flex-col py-1">
           <text class="form-label">
             <text class="required-star">*</text>
             姓名
           </text>
           <up-input v-model="formData.name" placeholder="" :disabled="true" class="form-input" />
         </view>
-        <view class="info-item flex flex-row items-center py-1" :class="{ 'item-border': isVerified }">
+        <view class="info-item flex flex-col py-1">
           <text class="form-label">
             <text class="required-star">*</text>
-            在网时长
+            在网时长>=1个月
           </text>
           <up-input v-model="formData.networkDuration" placeholder="" :disabled="true" class="form-input" />
         </view>
-        <view class="info-item flex flex-row items-center py-1">
+        <view class="info-item flex flex-col py-1">
           <text class="form-label">签发方</text>
           <up-input v-model="formData.issuer" placeholder="" :disabled="true" class="form-input" />
         </view>
@@ -70,15 +70,15 @@
 
       <!-- 时间信息卡片 -->
       <view class="bg-white rounded-lg p-4 shadow-sm flex flex-col gap-2 mt-3">
-        <view class="info-item flex flex-row items-center py-1 item-border">
-          <text class="form-label">凭证有效期限</text>
+        <view class="info-item flex flex-col py-1">
+          <text class="form-label">凭证有效期</text>
           <up-input v-model="formData.validPeriod" placeholder="" :disabled="true" class="form-input" />
         </view>
-        <view class="info-item flex flex-row items-center py-1 item-border">
+        <view class="info-item flex flex-col py-1">
           <text class="form-label">凭证签发日期</text>
           <up-input v-model="formData.issuedDate" placeholder="" :disabled="true" class="form-input" />
         </view>
-        <view class="info-item flex flex-row items-center py-1">
+        <view class="info-item flex flex-col py-1">
           <text class="form-label">凭证失效日期</text>
           <up-input v-model="formData.expiryDate" placeholder="" :disabled="true" class="form-input" />
         </view>
@@ -176,7 +176,13 @@ const extractValue = (source: Record<string, any> | undefined, keys: string[]): 
 const extractNetworkDuration = (source: Record<string, any> | undefined): string => {
   if (!source) return '';
 
-  // 首先尝试精确匹配
+  // 优先查找 "在网时长>=1 个月" 字段
+  const priorityKey = '在网时长>=1 个月';
+  if (priorityKey in source && source[priorityKey]) {
+    return String(source[priorityKey]);
+  }
+
+  // 其次尝试精确匹配
   const exactKeys = ['在网时长', '在網時長', 'networkDuration'];
   for (const key of exactKeys) {
     if (key in source && source[key]) {
@@ -189,16 +195,6 @@ const extractNetworkDuration = (source: Record<string, any> | undefined): string
     if (key.startsWith('在网时长') || key.startsWith('在網時長')) {
       const value = source[key];
       if (value) {
-        // 如果字段名包含条件（如 "在网时长>=1 个月"），提取条件部分
-        // 如果字段值是 "是"，则使用字段名中的条件部分
-        if (String(value) === '是' && key.includes('>=')) {
-          // 提取 ">=1 个月" 这样的条件部分
-          const match = key.match(/(>=.+)/);
-          if (match && match[1]) {
-            return match[1].trim();
-          }
-        }
-        // 否则返回字段值
         return String(value);
       }
     }
@@ -415,8 +411,8 @@ const handleModalConfirm = () => {
 
 .info-item {
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
+  gap: 8rpx;
 }
 
 .item-border {
@@ -432,8 +428,6 @@ const handleModalConfirm = () => {
   font-size: 28rpx;
   color: #333;
   font-weight: 400;
-  flex-shrink: 0;
-  width: 200rpx;
   position: relative;
   padding-left: 20rpx; // 为星号预留空间，确保文字对齐
 }
@@ -443,8 +437,7 @@ const handleModalConfirm = () => {
   font-weight: bold;
   position: absolute;
   left: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
 }
 
 .form-input {
