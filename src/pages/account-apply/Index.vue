@@ -2,7 +2,7 @@
  * @Author: git.name
  * @Date: 2025-12-16
  * @LastEditors: git.name
- * @LastEditTime: 2025-12-17 10:10:48
+ * @LastEditTime: 2025-12-17 13:32:40
  * @Description: 开户申请步骤页面
 -->
 <template>
@@ -130,13 +130,13 @@
 
       <!-- 协议复选框 -->
       <view class="agreement-section">
+        <view class="agreement-item">
+          <up-checkbox v-model:checked="selectAllChecked" usedAlone @change="onSelectAllChange"></up-checkbox>
+          <text class="agreement-label">{{ agreements.selectAllText }}</text>
+        </view>
         <up-checkbox-group v-model="agreementCheckedNames" @change="onAgreementGroupChange">
-          <view class="agreement-item">
-            <up-checkbox name="__all__" shape="circle"></up-checkbox>
-            <text class="agreement-label">{{ agreements.selectAllText }}</text>
-          </view>
           <view v-for="(agreement, index) in agreements.list" :key="index" class="agreement-item">
-            <up-checkbox :name="agreement.name" shape="circle"></up-checkbox>
+            <up-checkbox :name="agreement.name"></up-checkbox>
             <text class="agreement-text">{{ agreement.text }}</text>
           </view>
         </up-checkbox-group>
@@ -281,37 +281,27 @@ const agreements = ref({
 
 // 复选框组选中值
 const agreementCheckedNames = ref<string[]>([]);
-const AGREEMENT_ALL_NAME = '__all__';
 
-// 复选框组变化（处理“全选”逻辑）
-const onAgreementGroupChange = (names: string[]) => {
-  const prev = agreementCheckedNames.value;
-  const hadAll = prev.includes(AGREEMENT_ALL_NAME);
-  const hasAll = names.includes(AGREEMENT_ALL_NAME);
+// “全选”独立复选框（usedAlone）
+const selectAllChecked = ref(false);
 
-  // 如果之前是全选，现在取消全选，则清空
-  if (hadAll && !hasAll) {
-    agreementCheckedNames.value = [];
-    return;
-  }
-
-  const set = new Set(names);
+// 独立全选变化：同步到 group（用回调参数，避免 v-model 更新时序导致“反了”）
+const onSelectAllChange = (val: any) => {
+  const checked = typeof val === 'boolean' ? val : !!val?.detail?.value;
+  selectAllChecked.value = checked;
   const itemNames = agreements.value.list.map((i) => i.name);
+  agreementCheckedNames.value = checked ? [...itemNames] : [];
+};
 
-  // 勾选“全选”则补齐所有项
-  if (hasAll) {
-    itemNames.forEach((n) => set.add(n));
-  }
+// 复选框组变化：反向同步全选状态
+const onAgreementGroupChange = (payload: any) => {
+  // 文档中 change 回调为 array（各端可能是 payload 或 payload.detail）
+  // https://uview-plus.jiangruyi.com/components/checkbox.html
+  const names: string[] = Array.isArray(payload) ? payload : Array.isArray(payload?.detail) ? payload.detail : [];
+  agreementCheckedNames.value = names;
 
-  // 自动同步“全选”的状态
-  const allSelected = itemNames.every((n) => set.has(n));
-  if (allSelected) {
-    set.add(AGREEMENT_ALL_NAME);
-  } else {
-    set.delete(AGREEMENT_ALL_NAME);
-  }
-
-  agreementCheckedNames.value = Array.from(set);
+  const itemNames = agreements.value.list.map((i) => i.name);
+  selectAllChecked.value = itemNames.length > 0 && itemNames.every((n) => names.includes(n));
 };
 
 // 验证姓名
