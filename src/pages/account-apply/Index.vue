@@ -2,7 +2,7 @@
  * @Author: git.name
  * @Date: 2025-12-16
  * @LastEditors: git.name
- * @LastEditTime: 2025-12-17 13:32:40
+ * @LastEditTime: 2025-12-17 14:38:52
  * @Description: 开户申请步骤页面
 -->
 <template>
@@ -26,9 +26,9 @@
         <view class="tip-card" @click="handleLaunchMiniProgram">
           <view class="tip-content">
             <u-icon name="info-circle" size="18" color="#1890ff"></u-icon>
-            <text class="tip-text">前往</text>
+            <text class="tip-text">使用</text>
             <text class="tip-highlight">中移可信凭证</text>
-            <text class="tip-link">申请手机号档案凭证</text>
+            <text class="tip-link">自动填表</text>
             <u-icon name="arrow-rightward" size="20" color="#999" class="tip-arrow"></u-icon>
           </view>
         </view>
@@ -153,6 +153,18 @@
       </view>
     </view>
   </PageContainer>
+  <up-modal
+    :show="showApplyModal"
+    title="提示"
+    :showCancelButton="false"
+    confirmText="知道了"
+    confirmColor="#db0011"
+    @confirm="showApplyModal = false"
+  >
+    <view class="modal-content">
+      <text>已完成个人姓名、手机号码和在网时长的验证，接下来可继续后续的开户申请步骤。</text>
+    </view>
+  </up-modal>
 </template>
 
 <script setup lang="ts">
@@ -167,6 +179,7 @@ const { isVerified: credentialVerified, credentialSubject } = storeToRefs(creden
 
 // 状态栏高度（解决 custom 导航下与状态栏重叠）
 const statusBarHeight = ref<number>(uni.getSystemInfoSync()?.statusBarHeight || 0);
+const showApplyModal = ref(false);
 
 // 入口模式：online(在线预约) / branch(在行直接办理)
 const entry = ref<'online' | 'branch'>('online');
@@ -383,12 +396,7 @@ const canSubmit = computed(() => {
 
 // 提交表单
 const handleSubmit = () => {
-  if (!canSubmit.value) {
-    uni.showToast({ title: '请完成必填项', icon: 'none' });
-    return;
-  }
-  uni.showToast({ title: '提交成功', icon: 'success' });
-  // TODO: 实现提交逻辑
+  showApplyModal.value = true;
 };
 </script>
 
