@@ -2,7 +2,7 @@
  * @Author: git.name
  * @Date: 2025-12-16
  * @LastEditors: git.name
- * @LastEditTime: 2025-12-17 10:38:20
+ * @LastEditTime: 2025-12-17 14:39:35
  * @Description: 汇丰卓越理财页面
 -->
 <template>
@@ -109,7 +109,8 @@ const handleOnlineAppointment = () => {
 
 // 处理在行直接办理
 const handleInBranch = () => {
-  uni.navigateTo({ url: '/pages/account-apply/Index?entry=branch' });
+  // uni.navigateTo({ url: '/pages/account-apply/Index?entry=branch' });
+  uni.showToast({ title: '请点“在线提前预约”按钮', icon: 'none' });
 };
 
 // 页面数据
