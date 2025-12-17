@@ -157,10 +157,10 @@ watch(
   () => allItemsComplete.value && allItemsSuccess.value,
   (isSuccess) => {
     if (isSuccess) {
-      // 验证成功后 2 秒跳转到信息输入页面
+      // 验证成功后 2 秒跳转到开户申请页面
       setTimeout(() => {
         uni.redirectTo({
-          url: '/pages/home/CredentialInfo'
+          url: '/pages/account-apply/Index'
         });
       }, 2000);
     }

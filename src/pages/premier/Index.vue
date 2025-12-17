@@ -2,7 +2,7 @@
  * @Author: git.name
  * @Date: 2025-12-16
  * @LastEditors: git.name
- * @LastEditTime: 2025-12-16 21:38:49
+ * @LastEditTime: 2025-12-17 10:38:20
  * @Description: 汇丰卓越理财页面
 -->
 <template>
@@ -62,7 +62,7 @@
           </view>
           <text class="btn-text">在线提前预约</text>
         </view>
-        <view class="action-btn">
+        <view class="action-btn" @click="handleInBranch">
           <view class="btn-icon">
             <u-icon name="home" size="40" color="#db0011"></u-icon>
           </view>
@@ -104,7 +104,12 @@ import PageContainer from '@/components/PageContainer.vue';
 
 // 处理在线提前预约
 const handleOnlineAppointment = () => {
-  uni.navigateTo({ url: '/pages/account-apply/Index' });
+  uni.navigateTo({ url: '/pages/account-apply/Index?entry=online' });
+};
+
+// 处理在行直接办理
+const handleInBranch = () => {
+  uni.navigateTo({ url: '/pages/account-apply/Index?entry=branch' });
 };
 
 // 页面数据

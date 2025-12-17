@@ -2,16 +2,18 @@
  * @Author: git.name
  * @Date: 2025-12-16
  * @LastEditors: git.name
- * @LastEditTime: 2025-12-16 22:13:25
+ * @LastEditTime: 2025-12-17 10:10:48
  * @Description: 开户申请步骤页面
 -->
 <template>
   <PageContainer>
     <view class="account-apply-page">
       <!-- 顶部 Header -->
-      <view class="header">
-        <view class="logo-section">
-          <image src="/static/h5logo.png" class="hsbc-logo"></image>
+      <view class="header" :style="{ paddingTop: statusBarHeight + 'px' }">
+        <view class="header-content">
+          <view class="logo-section">
+            <image src="/static/h5logo.png" class="hsbc-logo"></image>
+          </view>
         </view>
       </view>
 
@@ -20,12 +22,23 @@
         <text class="page-title">{{ pageData.title }}</text>
       </view>
 
+      <view v-if="showTipCard" class="tip-card-wrap">
+        <view class="tip-card" @click="handleLaunchMiniProgram">
+          <view class="tip-content">
+            <u-icon name="info-circle" size="18" color="#1890ff"></u-icon>
+            <text class="tip-text">前往</text>
+            <text class="tip-highlight">中移可信凭证</text>
+            <text class="tip-link">申请手机号档案凭证</text>
+            <u-icon name="arrow-rightward" size="20" color="#999" class="tip-arrow"></u-icon>
+          </view>
+        </view>
+      </view>
+
       <!-- 步骤列表 -->
       <view class="steps-section">
         <view v-for="(step, index) in stepsList" :key="index" class="step-item">
           <view class="step-left">
             <view class="step-number">{{ index + 1 }}</view>
-            <view v-if="index < stepsList.length - 1" class="step-line"></view>
           </view>
           <text class="step-text">{{ step }}</text>
         </view>
@@ -77,20 +90,26 @@
           </view>
         </view>
 
-        <!-- 短信验证码 -->
+        <!-- 短信验证码 / 在网时长 -->
         <view class="form-item">
-          <text class="form-label">{{ formData.smsCode.label }}</text>
-          <view class="form-row-input">
-            <input
-              v-model="formData.smsCode.value"
-              class="form-input flex-1"
-              :placeholder="formData.smsCode.placeholder"
-              type="number"
-            />
-            <view class="sms-button" @click="getSmsCode">
-              <text class="sms-button-text">{{ smsButtonText }}</text>
+          <template v-if="credentialVerified">
+            <text class="form-label">{{ formData.networkDuration.label }}</text>
+            <input v-model="formData.networkDuration.value" class="form-input" :disabled="true" />
+          </template>
+          <template v-else>
+            <text class="form-label">{{ formData.smsCode.label }}</text>
+            <view class="form-row-input">
+              <input
+                v-model="formData.smsCode.value"
+                class="form-input flex-1"
+                :placeholder="formData.smsCode.placeholder"
+                type="number"
+              />
+              <view class="sms-button" @click="getSmsCode">
+                <text class="sms-button-text">{{ smsButtonText }}</text>
+              </view>
             </view>
-          </view>
+          </template>
         </view>
 
         <!-- 汇丰员工推荐码 -->
@@ -111,19 +130,16 @@
 
       <!-- 协议复选框 -->
       <view class="agreement-section">
-        <view class="agreement-item" @click="toggleSelectAll">
-          <u-checkbox v-model="agreements.selectAll" shape="circle"></u-checkbox>
-          <text class="agreement-label">{{ agreements.selectAllText }}</text>
-        </view>
-        <view
-          v-for="(agreement, index) in agreements.list"
-          :key="index"
-          class="agreement-item"
-          @click="toggleAgreement(index)"
-        >
-          <u-checkbox v-model="agreement.checked" shape="circle"></u-checkbox>
-          <text class="agreement-text">{{ agreement.text }}</text>
-        </view>
+        <up-checkbox-group v-model="agreementCheckedNames" @change="onAgreementGroupChange">
+          <view class="agreement-item">
+            <up-checkbox name="__all__" shape="circle"></up-checkbox>
+            <text class="agreement-label">{{ agreements.selectAllText }}</text>
+          </view>
+          <view v-for="(agreement, index) in agreements.list" :key="index" class="agreement-item">
+            <up-checkbox :name="agreement.name" shape="circle"></up-checkbox>
+            <text class="agreement-text">{{ agreement.text }}</text>
+          </view>
+        </up-checkbox-group>
       </view>
 
       <!-- 底部占位，防止内容被 footer 遮挡 -->
@@ -140,8 +156,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+import { onLoad } from '@dcloudio/uni-app';
 import PageContainer from '@/components/PageContainer.vue';
+import { useCredentialStore } from '@/stores/modules/credential';
+
+const credentialStore = useCredentialStore();
+const { isVerified: credentialVerified, credentialSubject } = storeToRefs(credentialStore);
+
+// 状态栏高度（解决 custom 导航下与状态栏重叠）
+const statusBarHeight = ref<number>(uni.getSystemInfoSync()?.statusBarHeight || 0);
+
+// 入口模式：online(在线预约) / branch(在行直接办理)
+const entry = ref<'online' | 'branch'>('online');
+onLoad((options) => {
+  const v = (options?.entry as string) || 'online';
+  entry.value = v === 'branch' ? 'branch' : 'online';
+});
 
 // 页面数据
 const pageData = ref({
@@ -151,7 +183,14 @@ const pageData = ref({
 });
 
 // 步骤列表
-const stepsList = ref(['填写个人基本信息', '预约开户分支行', '补充开户信息']);
+const stepsList = computed(() => {
+  return entry.value === 'branch'
+    ? ['填写个人基本信息', '补充开户信息']
+    : ['填写个人基本信息', '预约开户分支行', '补充开户信息'];
+});
+
+// tip-card 仅在在线预约且未验证时展示
+const showTipCard = computed(() => entry.value === 'online' && !credentialVerified.value);
 
 // 表单数据
 const formData = ref({
@@ -177,6 +216,11 @@ const formData = ref({
     value: '',
     placeholder: '请输入'
   },
+  networkDuration: {
+    label: '在网时长>=1个月',
+    value: '是',
+    placeholder: ''
+  },
   referralCode: {
     label: '汇丰员工推荐码(选填)',
     value: '',
@@ -184,29 +228,91 @@ const formData = ref({
   }
 });
 
+const extractValue = (source: Record<string, any>, keys: string[]): string => {
+  for (const key of keys) {
+    const value = source?.[key];
+    if (value !== undefined && value !== null && value !== '') {
+      return String(value);
+    }
+  }
+  return '';
+};
+
+const fillFromCredential = () => {
+  const subject = (credentialSubject.value || {}) as Record<string, any>;
+  formData.value.name.value = extractValue(subject, ['姓名', 'name', 'fullName']);
+  formData.value.phone.value = extractValue(subject, ['手机号码', '手机号', 'phone', 'phoneNumber', 'mobile']);
+  formData.value.networkDuration.value =
+    extractValue(subject, ['在网时长>=1 个月', '在网时长>=1个月', '在网时长', '在網時長']) || '是';
+};
+
+watch(
+  () => credentialVerified.value,
+  (v) => {
+    if (v) {
+      fillFromCredential();
+    }
+  },
+  { immediate: true }
+);
+
 // 短信验证码按钮文字
 const smsButtonText = ref('获取验证码');
 const smsCountdown = ref(0);
 
 // 协议数据
 const agreements = ref({
-  selectAll: false,
   selectAllText: '全选',
   list: [
     {
-      checked: false,
+      name: 'policy',
       text: '本人已阅读并同意《汇丰银行(中国)有限公司个人信息及隐私保护政策》,并授权同意汇丰中国收集处理本人的个人信息,以完成开户预约及开户审查的目的。'
     },
     {
-      checked: false,
+      name: 'contact',
       text: '本人同意贵行通过电话、短信、微信或其他方式联系本人,以便协助本人后续完成申请。'
     },
     {
-      checked: false,
+      name: 'marketing',
       text: '(选填)本人同意汇丰中国通过电话、短信、微信或其他方式向本人发送汇丰银行相关产品及服务的市场营销、用户体验和市场调查信息。'
     }
   ]
 });
+
+// 复选框组选中值
+const agreementCheckedNames = ref<string[]>([]);
+const AGREEMENT_ALL_NAME = '__all__';
+
+// 复选框组变化（处理“全选”逻辑）
+const onAgreementGroupChange = (names: string[]) => {
+  const prev = agreementCheckedNames.value;
+  const hadAll = prev.includes(AGREEMENT_ALL_NAME);
+  const hasAll = names.includes(AGREEMENT_ALL_NAME);
+
+  // 如果之前是全选，现在取消全选，则清空
+  if (hadAll && !hasAll) {
+    agreementCheckedNames.value = [];
+    return;
+  }
+
+  const set = new Set(names);
+  const itemNames = agreements.value.list.map((i) => i.name);
+
+  // 勾选“全选”则补齐所有项
+  if (hasAll) {
+    itemNames.forEach((n) => set.add(n));
+  }
+
+  // 自动同步“全选”的状态
+  const allSelected = itemNames.every((n) => set.has(n));
+  if (allSelected) {
+    set.add(AGREEMENT_ALL_NAME);
+  } else {
+    set.delete(AGREEMENT_ALL_NAME);
+  }
+
+  agreementCheckedNames.value = Array.from(set);
+};
 
 // 验证姓名
 const validateName = () => {
@@ -227,6 +333,19 @@ const validatePhone = () => {
   } else {
     formData.value.phone.error = '';
   }
+};
+
+// 拉起小程序申请凭证
+const handleLaunchMiniProgram = () => {
+  // 重置数据和状态
+  setTimeout(() => {
+    credentialStore.clearCredential();
+  }, 1000);
+
+  // 跳转到加载页面
+  uni.redirectTo({
+    url: '/pages/home/CredentialLoading'
+  });
 };
 
 // 获取短信验证码
@@ -257,30 +376,19 @@ const showPhoneCodePicker = () => {
   uni.showToast({ title: '选择电话区号', icon: 'none' });
 };
 
-// 全选/取消全选
-const toggleSelectAll = () => {
-  agreements.value.selectAll = !agreements.value.selectAll;
-  agreements.value.list.forEach((item) => {
-    item.checked = agreements.value.selectAll;
-  });
-};
-
-// 切换单个协议
-const toggleAgreement = (index: number) => {
-  agreements.value.list[index].checked = !agreements.value.list[index].checked;
-  // 检查是否全部选中
-  agreements.value.selectAll = agreements.value.list.every((item) => item.checked);
-};
-
 // 是否可以提交
 const canSubmit = computed(() => {
-  return (
-    formData.value.name.value &&
-    formData.value.phone.value &&
-    formData.value.smsCode.value &&
-    agreements.value.list[0].checked &&
-    agreements.value.list[1].checked
-  );
+  const baseOk =
+    !!formData.value.name.value &&
+    !!formData.value.phone.value &&
+    agreementCheckedNames.value.includes('policy') &&
+    agreementCheckedNames.value.includes('contact');
+
+  if (credentialVerified.value) {
+    return baseOk && !!formData.value.networkDuration.value;
+  }
+
+  return baseOk && !!formData.value.smsCode.value;
 });
 
 // 提交表单
@@ -304,12 +412,16 @@ const handleSubmit = () => {
 // 顶部 Header
 .header {
   background: #fff;
+  box-sizing: border-box;
+}
+
+.header-content {
   height: 50px;
   padding: 0 32rpx;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
 }
 
 .logo-section {
@@ -341,6 +453,52 @@ const handleSubmit = () => {
   color: #333;
 }
 
+// 顶部提示卡片
+.tip-card-wrap {
+  padding: 0 32rpx 24rpx;
+}
+
+.tip-card {
+  padding: 32rpx;
+  border-radius: 0;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.tip-content {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex-wrap: nowrap;
+}
+
+.tip-arrow {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.tip-text {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.tip-highlight {
+  font-size: 26rpx;
+  color: #1890ff;
+  font-weight: 500;
+}
+
+.tip-link {
+  font-size: 26rpx;
+  color: #db0011;
+  font-weight: 500;
+}
+
 // 步骤列表
 .steps-section {
   margin: 24rpx 32rpx;
@@ -351,18 +509,23 @@ const handleSubmit = () => {
 
 .step-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 24rpx;
+  margin-bottom: 40rpx;
+}
+
+.step-item:last-child {
+  margin-bottom: 0;
 }
 
 .step-left {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  position: relative;
+  width: 48rpx;
   flex-shrink: 0;
 }
 
 .step-number {
+  position: relative;
   width: 48rpx;
   height: 48rpx;
   border-radius: 50%;
@@ -376,18 +539,25 @@ const handleSubmit = () => {
   border: 1rpx solid #d0d0d0;
 }
 
-.step-line {
+.step-number::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
   width: 2rpx;
-  height: 60rpx;
+  height: 40rpx;
   background: #e5e5e5;
-  margin-top: 8rpx;
+}
+
+.step-item:last-child .step-number::after {
+  display: none;
 }
 
 .step-text {
   font-size: 28rpx;
   color: #666;
   line-height: 1.6;
-  padding-top: 12rpx;
   flex: 1;
 }
 
@@ -556,11 +726,13 @@ const handleSubmit = () => {
   left: 0;
   right: 0;
   height: 93px;
-  padding: 16px 32rpx;
+  padding: 0 32rpx;
   background: #fff;
-  box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, 0.1);
+  border-top: 1rpx solid #e5e5e5;
   box-sizing: border-box;
   z-index: 100;
+  display: flex;
+  align-items: center;
 }
 
 .submit-button {
