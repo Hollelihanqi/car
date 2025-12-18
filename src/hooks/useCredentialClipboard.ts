@@ -20,7 +20,7 @@ export const useCredentialClipboard = (options: CredentialClipboardOptions = {})
     onMatch,
     title = '提示',
     content = '检测到手机号档案凭证，是否一键粘贴？',
-    confirmText = '导入',
+    confirmText = '粘贴',
     cancelText = '取消'
   } = options;
 
