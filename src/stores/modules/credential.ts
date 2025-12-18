@@ -194,8 +194,9 @@ export const useCredentialStore = defineStore(
     /**
      * 安全跳转到验证页面
      * 检查页面栈和验证状态，避免页面销毁后的错误
+     * type:1:剪贴板2：小程序
      */
-    const navigateToVerifyPage = (): void => {
+    const navigateToVerifyPage = (type: number): void => {
       try {
         // 检查页面栈是否存在，避免在页面销毁后执行跳转
         const pages = getCurrentPages();
@@ -206,12 +207,21 @@ export const useCredentialStore = defineStore(
 
         // 判断：未验证且存在凭证信息
         if (!isVerified.value && credentialInfo.value) {
-          uni.redirectTo({
-            url: '/pages/home/CredentialVerify',
-            fail: (err) => {
-              console.warn('页面跳转失败:', err);
-            }
-          });
+          if (type === 1) {
+            uni.navigateTo({
+              url: '/pages/home/CredentialVerify',
+              fail: (err) => {
+                console.warn('页面跳转失败:', err);
+              }
+            });
+          } else {
+            uni.redirectTo({
+              url: '/pages/home/CredentialVerify',
+              fail: (err) => {
+                console.warn('页面跳转失败:', err);
+              }
+            });
+          }
         }
       } catch (error) {
         console.warn('页面跳转时发生错误:', error);
@@ -257,7 +267,7 @@ export const useCredentialStore = defineStore(
 
       // 延迟跳转到验证页面（只有未验证且有凭证信息时才跳转）
       setTimeout(() => {
-        navigateToVerifyPage();
+        navigateToVerifyPage(2);
       }, 2000);
 
       return true;
@@ -275,7 +285,7 @@ export const useCredentialStore = defineStore(
 
       // 直接跳转到验证页面（不使用 setTimeout）
       setTimeout(() => {
-        navigateToVerifyPage();
+        navigateToVerifyPage(1);
       }, 500);
 
       return true;
