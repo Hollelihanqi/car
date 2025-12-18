@@ -68,11 +68,13 @@ const onCredentialOpen = () => {
 };
 
 const onCredentialActivate = () => {
-  uni.navigateTo({ url: '/pages/premier/Index' });
+  // uni.navigateTo({ url: '/pages/premier/Index' });
+  uni.showToast({ title: '申请开通', icon: 'none' });
 };
 
 const onCredentialApply = () => {
-  uni.navigateTo({ url: '/pages/premier/Index' });
+  // uni.navigateTo({ url: '/pages/premier/Index' });
+  uni.showToast({ title: '选卡申请', icon: 'none' });
 };
 
 // 账户列表数据

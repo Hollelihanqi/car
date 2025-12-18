@@ -109,8 +109,8 @@ const handleOnlineAppointment = () => {
 
 // 处理在行直接办理
 const handleInBranch = () => {
-  // uni.navigateTo({ url: '/pages/account-apply/Index?entry=branch' });
-  uni.showToast({ title: '请点“在线提前预约”按钮', icon: 'none' });
+  uni.navigateTo({ url: '/pages/account-apply/Index?entry=branch' });
+  // uni.showToast({ title: '请点“在线提前预约”按钮', icon: 'none' });
 };
 
 // 页面数据
