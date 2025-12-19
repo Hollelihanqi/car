@@ -41,25 +41,33 @@
                     "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
                     "<uses-feature android:name=\"android.hardware.camera\"/>",
                     "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
-                ]
+                ],
+                "schemes" : "com.test.hsbc"
             },
             /* ios打包配置 */
             "ios" : {
                 "name" : "MoVer",
-                "dSYMs" : false
+                "dSYMs" : false,
+                "urltypes" : "com.test.hsbc",
+                "capabilities" : {
+                    "entitlements" : {
+                        "com.apple.developer.associated-domains" : [ "bsnbase.io" ]
+                    }
+                },
+                "idfa" : false
             },
             /* SDK配置 */
             "sdkConfigs" : {
                 "share" : {
                     "weixin" : {
                         "appid" : "wx83276ecb02f2fca9",
-                        "UniversalLinks" : ""
+                        "UniversalLinks" : "https://bsnbase.io/td-wallet/"
                     }
                 },
                 "oauth" : {
                     "weixin" : {
                         "appid" : "wx83276ecb02f2fca9",
-                        "UniversalLinks" : ""
+                        "UniversalLinks" : "https://bsnbase.io/td-wallet/"
                     }
                 }
             },
