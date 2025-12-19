@@ -2,7 +2,7 @@
  * @Author: git.name
  * @Date: 2025-12-16
  * @LastEditors: zhoudandan
- * @LastEditTime: 2025-12-18 14:42:38
+ * @LastEditTime: 2025-12-18 16:39:28
  * @Description: 开户申请步骤页面
 -->
 <template>
@@ -246,7 +246,7 @@ const stepsList = computed(() => {
 });
 
 // tip-card 仅在在线预约且未验证时展示
-const showTipCard = computed(() => entry.value === 'online' && !credentialVerified.value);
+const showTipCard = computed(() => !credentialVerified.value);
 
 // 表单数据
 const formData = ref({
