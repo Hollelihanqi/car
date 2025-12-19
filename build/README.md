@@ -10,20 +10,20 @@
 
 # IOS 构建信息
 
-**包名:** ``
+**包名:** `com.build.hsbc`
 
-**Certificate Name:** ``
+**Certificate Name:** `Red Date (Hong Kong) Technology Limited`
 
-**Certificate Type:** ``
+**Certificate Type:** `iOS Distribution`
 
-**Expiration Date:** ``
+**Expiration Date:** `2026/04/17`
 
-**Created By:** ``
+**Created By:** `shuo wang (t_wangshuo@163.com)`
 
-**App ID Prefix:** ``
+**App ID Prefix:** `6HT3D8YQS2`
 
-**Bundle ID:** ``
+**Bundle ID:** `com.sing.vc`
 
-**证书:** ``
+**证书:** `./SingVC.p12`
 
-**证书密码:** ``
+**证书密码:** `123456`
