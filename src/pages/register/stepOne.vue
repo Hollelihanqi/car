@@ -19,8 +19,8 @@
         <view>
           <view class="text-[#666] mt-[30rpx]">国家 / 地区</view>
           <view class="flex justify-between mt-[10rpx] border-0 border-b border-solid border-black pb-[10rpx]">
-            <View>香港特别行政区</View>
-            <View><up-icon name="arrow-down" /></View>
+            <view>香港特别行政区</view>
+            <view><up-icon name="arrow-down" /></view>
           </view>
 
           <view class="mt-[30rpx] underline">找不到您的国家 / 地区？</view>
@@ -35,8 +35,8 @@
           </up-radio-group>
         </view>
         <view class="p-[30rpx] bg-[#eee] mt-[30rpx] flex justify-between gap-[30rpx]">
-          <View>没有香港身份证？您也可使用其他身份证明文件开立账户</View>
-          <View><up-icon name="arrow-down" size="20" class="mt-[4rpx]" /></View>
+          <view>没有香港身份证？您也可使用其他身份证明文件开立账户</view>
+          <view><up-icon name="arrow-down" size="20" class="mt-[4rpx]" /></view>
         </view>
       </view>
     </view>
