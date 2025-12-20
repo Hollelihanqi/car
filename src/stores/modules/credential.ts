@@ -265,10 +265,12 @@ export const useCredentialStore = defineStore(
         return false;
       }
 
-      // 延迟跳转到验证页面（只有未验证且有凭证信息时才跳转）
-      setTimeout(() => {
-        navigateToVerifyPage(2);
-      }, 2000);
+      // 延迟跳转到验证页面（只有未验证且有凭证信息时才跳转）国内版本跳转
+      // setTimeout(() => {
+      //   navigateToVerifyPage(2);
+      // }, 2000);
+
+      // 香港汇丰银行版本不跳转
 
       return true;
     };

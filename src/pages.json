@@ -43,6 +43,18 @@
 			}
 		},
 		{
+			"path": "pages/register/verifyMobile",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/register/end",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/home/Index",
 			"style": {
 				"navigationBarTitleText": "首页"

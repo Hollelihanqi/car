@@ -2,19 +2,22 @@
  * @Author: git.name
  * @Date: 2025-12-10
  * @LastEditors: zhoudandan
- * @LastEditTime: 2025-12-19 17:52:39
+ * @LastEditTime: 2025-12-20 14:02:02
  * @Description: 注册页面
 -->
 <template>
   <PageContainer>
     <!-- 顶部导航栏 -->
     <Header></Header>
-    <view class="thanks">您是否有活动二维码？</view>
+    <view class="thanks">您希望使用哪种身份证明文件开立账户</view>
     <view class="px-[32rpx] mt-[50rpx]">
       <up-radio-group v-model="radioValue" placement="column" size="24" iconSize="18">
-        <up-radio activeColor="red" label='如有,请点选"继续"以扫描活动二维码。' name="1"></up-radio>
-        <up-radio class="mt-[30rpx]" activeColor="red" label='如没有,请点选"继续"以继续申请。' name="2"></up-radio>
+        <up-radio activeColor="red" label="往来港澳通行证" name="1"></up-radio>
       </up-radio-group>
+    </view>
+    <view class="px-[32rpx] mt-[50rpx] flex justify-between pb-[20rpx] border-0 border-b border-solid border-[#ccc]">
+      <view>身份证明文件未被列出？</view>
+      <up-icon name="arrow-down" bold size="24" />
     </view>
     <!-- 按钮 -->
     <view class="submit-footer">
@@ -25,6 +28,17 @@
         <text class="submit-button-default-text">返回</text>
       </view>
     </view>
+    <up-modal :show="showModal" :showConfirmButton="false" title="说明">
+      <view class="modal-content">
+        <view class="">
+          <view class="">此时已通过手机号实名身份凭证获取到用户手机号码和姓名,可继续进行剩下的开户流程;</view>
+          <view class="mt-[20rpx]">后续当用户提交有效身份证件资料时, 还可以与手机号实名身份凭证中信息进 行比对。</view>
+        </view>
+        <view class="mt-[50rpx]">
+          <button class="bg-[#db0011] text-white text-[30rpx]" @click="handleCancel">返回上一页</button>
+        </view>
+      </view>
+    </up-modal>
   </PageContainer>
 </template>
 
@@ -32,13 +46,15 @@
 import PageContainer from '@/components/PageContainer.vue';
 import Header from '@/components/Header.vue';
 import { ref } from 'vue';
-const radioValue = ref('2');
+const radioValue = ref('1');
+const showModal = ref(false);
 const toStepNext = () => {
-  uni.navigateTo({
-    url: '/pages/register/email'
-  });
+  showModal.value = true;
 };
 const onBack = () => {
+  uni.navigateBack();
+};
+const handleCancel = () => {
   uni.navigateBack();
 };
 </script>

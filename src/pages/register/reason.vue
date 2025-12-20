@@ -75,7 +75,7 @@ const onBackStep = () => {
 
 .thanks {
   padding: 0rpx 32rpx;
-  padding-top: 50rpx;
+  padding-top: calc(50rpx + var(--status-bar-height));
   font-size: 50rpx;
   font-weight: 600;
 }
