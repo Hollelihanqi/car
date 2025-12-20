@@ -2,7 +2,7 @@
  * @Author: git.name
  * @Date: 2025-12-10
  * @LastEditors: zhoudandan
- * @LastEditTime: 2025-12-20 14:13:03
+ * @LastEditTime: 2025-12-20 16:44:53
  * @Description: 注册页面
 -->
 <template>
@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits } from 'vue';
+import { ref } from 'vue';
 const emits = defineEmits(['changeAreaCode']);
 const searchValue = ref('');
 const areaCodeValue = ref([

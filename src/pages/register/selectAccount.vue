@@ -27,7 +27,7 @@
             class="h-[350rpx] w-full mt-[30rpx] flex justify-center items-center"
             :style="'background-color: ' + item.bgColor"
           >
-            <image :src="item.imageUrl" class="h-[280rpx]" mode="aspectFit"></image>
+            <image :src="item.imageUrl" class="h-[280rpx] static!" mode="aspectFit"></image>
             <!-- <img :src="" class="h-[280rpx]" /> -->
           </view>
 
