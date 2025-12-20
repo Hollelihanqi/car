@@ -7,7 +7,7 @@
 -->
 <template>
   <view>
-    <view class="thanks">选择国家或地区编号</view>
+    <view class="page-title">选择国家或地区编号</view>
     <view class="mx-[32rpx] mt-[50rpx]">
       <view class="flex border-0 border-b border-solid border-[#767676]">
         <view class="flex items-center">
@@ -87,7 +87,7 @@ const closeCode = () => {
   padding-bottom: 100rpx;
 }
 
-.thanks {
+.page-title {
   padding: 0rpx 32rpx;
   padding-top: calc(50rpx + var(--status-bar-height));
   font-size: 50rpx;

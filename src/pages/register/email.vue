@@ -9,7 +9,7 @@
   <PageContainer>
     <!-- 顶部导航栏 -->
     <Header></Header>
-    <view class="thanks">现在开始申请，请提供您的电子邮箱</view>
+    <view class="page-title">现在开始申请，请提供您的电子邮箱</view>
     <view class="px-[32rpx] mt-[50rpx]">
       <view class="text-[#666]">电子邮箱</view>
       <input v-model="emailValue" class="form-input" @blur="validateEmail" />
@@ -63,7 +63,7 @@ const toStepNext = () => {
   padding-bottom: 100rpx;
 }
 
-.thanks {
+.page-title {
   padding: 0rpx 32rpx;
   padding-top: calc(50rpx + var(--status-bar-height));
   font-size: 50rpx;

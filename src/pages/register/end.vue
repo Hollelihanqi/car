@@ -9,7 +9,7 @@
   <PageContainer>
     <!-- 顶部导航栏 -->
     <Header></Header>
-    <view class="thanks">您希望使用哪种身份证明文件开立账户</view>
+    <view class="page-title">您希望使用哪种身份证明文件开立账户</view>
     <view class="px-[32rpx] mt-[50rpx]">
       <up-radio-group v-model="radioValue" placement="column" size="24" iconSize="18">
         <up-radio activeColor="red" label="往来港澳通行证" name="1"></up-radio>
@@ -67,7 +67,7 @@ const handleCancel = () => {
   padding-bottom: 100rpx;
 }
 
-.thanks {
+.page-title {
   padding: 0rpx 32rpx;
   padding-top: calc(50rpx + var(--status-bar-height));
   font-size: 50rpx;

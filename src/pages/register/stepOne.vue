@@ -9,7 +9,7 @@
   <PageContainer>
     <!-- 顶部导航栏 -->
     <Header></Header>
-    <view class="thanks">感谢您选择汇丰</view>
+    <view class="page-title">感谢您选择汇丰</view>
     <!-- 图片 -->
     <image src="/static/bg2.png" class="banner-image" mode="aspectFill"></image>
     <!-- 文字描述 -->
@@ -69,7 +69,7 @@ const toStepNext = () => {
   padding-bottom: 100rpx;
 }
 
-.thanks {
+.page-title {
   padding: 0rpx 32rpx;
   padding-top: calc(50rpx + var(--status-bar-height));
   font-size: 50rpx;

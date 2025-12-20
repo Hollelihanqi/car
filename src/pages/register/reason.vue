@@ -9,7 +9,7 @@
   <PageContainer>
     <!-- 顶部导航栏 -->
     <Header></Header>
-    <view class="thanks">您在香港开立账户的原因是？</view>
+    <view class="page-title">您在香港开立账户的原因是？</view>
     <view class="px-[32rpx] mt-[40rpx]">
       <up-cell-group>
         <up-cell
@@ -73,7 +73,7 @@ const onBackStep = () => {
   padding-bottom: 100rpx;
 }
 
-.thanks {
+.page-title {
   padding: 0rpx 32rpx;
   padding-top: calc(50rpx + var(--status-bar-height));
   font-size: 50rpx;

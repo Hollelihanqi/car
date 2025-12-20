@@ -9,7 +9,7 @@
   <PageContainer>
     <!-- 顶部导航栏 -->
     <Header></Header>
-    <view class="thanks">您想申请那个账户？</view>
+    <view class="page-title">您想申请那个账户？</view>
 
     <!-- 文字描述 -->
     <view class="px-[32rpx] text-[30rpx] leading-[46rpx]">
@@ -89,7 +89,7 @@ const tostepTwo = () => {
   padding-bottom: 150rpx;
 }
 
-.thanks {
+.page-title {
   padding: 0rpx 32rpx;
   padding-top: calc(50rpx + var(--status-bar-height));
   font-size: 50rpx;

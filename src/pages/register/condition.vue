@@ -9,7 +9,7 @@
   <PageContainer>
     <!-- 顶部导航栏 -->
     <Header></Header>
-    <view class="thanks">10分钟内轻松开户</view>
+    <view class="page-title">10分钟内轻松开户</view>
     <view class="px-[32rpx] mt-[40rpx]">
       <view v-for="(item, index) in stepValue" :key="index">
         <view class="flex gap-[30rpx]">
@@ -111,7 +111,7 @@ const onBackStep = () => {
   padding-bottom: 100rpx;
 }
 
-.thanks {
+.page-title {
   padding: 0rpx 32rpx;
   padding-top: calc(50rpx + var(--status-bar-height));
   font-size: 50rpx;

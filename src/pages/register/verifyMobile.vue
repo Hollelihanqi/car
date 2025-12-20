@@ -2,7 +2,7 @@
  * @Author: git.name
  * @Date: 2025-12-10
  * @LastEditors: zhoudandan
- * @LastEditTime: 2025-12-20 14:14:39
+ * @LastEditTime: 2025-12-20 15:00:42
  * @Description: 注册页面
 -->
 <template>
@@ -10,7 +10,7 @@
     <!-- 顶部导航栏 -->
     <Header></Header>
     <view v-if="!areaCode">
-      <view class="thanks">验证您的手机号码</view>
+      <view class="page-title">验证您的手机号码</view>
       <view class="mx-[32rpx] mt-[50rpx] p-[20rpx] border border-solid border-[#bbb] flex justify-between items-center">
         <view class="text-[24rpx]">中国大陆用户请上传手机号实名身份凭证</view>
         <view class="submit-button rounded w-[150rpx]! h-[60rpx]!" @click="handleLaunchMiniProgram">
@@ -65,9 +65,8 @@
           areaCode = false;
         }
       "
-      @fill-from-credential="fillFromCredential"
     ></AreaCode>
-    <VerifyMobile ref="verifyMobileModal"></VerifyMobile>
+    <VerifyMobile ref="verifyMobileModal" @fill-from-credential="fillFromCredential"></VerifyMobile>
   </PageContainer>
 </template>
 
@@ -80,7 +79,7 @@ import { ref } from 'vue';
 import { useCredentialStore } from '@/stores';
 const credentialStore = useCredentialStore();
 const { credentialSubject } = storeToRefs(credentialStore);
-const inputValue = ref({
+const inputValue = reactive({
   name: '',
   phone: '',
   networkDuration: ''
@@ -109,9 +108,9 @@ const extractValue = (source: Record<string, any>, keys: string[]): string => {
 
 const fillFromCredential = () => {
   const subject = (credentialSubject.value || {}) as Record<string, any>;
-  inputValue.value.name = extractValue(subject, ['姓名', 'name', 'fullName']);
-  inputValue.value.phone = extractValue(subject, ['手机号码', '手机号', 'phone', 'phoneNumber', 'mobile']);
-  inputValue.value.networkDuration =
+  inputValue.name = extractValue(subject, ['姓名', 'name', 'fullName']);
+  inputValue.phone = extractValue(subject, ['手机号码', '手机号', 'phone', 'phoneNumber', 'mobile']);
+  inputValue.networkDuration =
     extractValue(subject, ['在网时长>=1 个月', '在网时长>=1个月', '在网时长', '在網時長']) || '是';
   isVerified.value = true;
 };
@@ -136,7 +135,7 @@ const onBackStep = () => {
   padding-bottom: 100rpx;
 }
 
-.thanks {
+.page-title {
   padding: 0rpx 32rpx;
   padding-top: calc(50rpx + var(--status-bar-height));
   font-size: 50rpx;
