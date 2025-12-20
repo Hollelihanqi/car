@@ -32,7 +32,13 @@
         <button class="bg-[#db0011] text-white text-[30rpx]" @click="handleConfirm">确认导入</button>
       </view>
       <!-- 验证失败时的取消按钮 -->
-      <view v-if="allItemsComplete && !allItemsSuccess && verifyError" class="mt-[50rpx]">
+      <view
+        v-if="
+          (allItemsComplete && !allItemsSuccess && verifyError) ||
+          (minute >= 120 && !(allItemsComplete && allItemsSuccess))
+        "
+        class="mt-[50rpx]"
+      >
         <button class="bg-[#db0011] text-white text-[30rpx]" @click="handleCancel">关闭</button>
       </view>
     </view>
@@ -64,9 +70,20 @@ const allItemsSuccess = computed(() => {
 
 // Modal 显示控制
 const showModal = ref(false);
+const minute = ref(0);
 defineExpose({
   showModal: () => {
     showModal.value = true;
+    minute.value = 0;
+    const timer = setInterval(() => {
+      minute.value += 1;
+      if (
+        minute.value >= 120 ||
+        (allItemsComplete.value && !allItemsSuccess.value && verifyError) ||
+        (allItemsComplete.value && allItemsSuccess)
+      )
+        clearInterval(timer);
+    }, 1000);
   }
 });
 
