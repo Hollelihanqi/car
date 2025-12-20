@@ -2,7 +2,7 @@
  * @Author: git.name
  * @Date: 2025-12-10
  * @LastEditors: zhoudandan
- * @LastEditTime: 2025-12-20 10:43:57
+ * @LastEditTime: 2025-12-20 16:09:40
  * @Description: 注册页面
 -->
 <template>
@@ -36,7 +36,7 @@ const onBack = () => {
 };
 const onConfirm = () => {
   uni.reLaunch({
-    url: '/'
+    url: '/pages/register/Index'
   });
 };
 </script>
