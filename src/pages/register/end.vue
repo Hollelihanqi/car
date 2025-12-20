@@ -2,7 +2,7 @@
  * @Author: git.name
  * @Date: 2025-12-10
  * @LastEditors: zhoudandan
- * @LastEditTime: 2025-12-20 16:12:59
+ * @LastEditTime: 2025-12-20 17:53:39
  * @Description: 注册页面
 -->
 <template>
@@ -32,7 +32,7 @@
       <view class="modal-content">
         <view class="">
           <view class="">此时已通过手机号实名身份凭证获取到用户手机号码和姓名,可继续进行剩下的开户流程;</view>
-          <view class="mt-[20rpx]">后续当用户提交有效身份证件资料时, 还可以与手机号实名身份凭证中信息进 行比对。</view>
+          <view class="mt-[20rpx]">后续当用户提交有效身份证件资料时, 还可以与手机号实名身份凭证中信息进行比对。</view>
         </view>
         <view class="mt-[50rpx]">
           <button class="bg-[#db0011] text-white text-[30rpx]" @click="handleCancel">返回上一页</button>
