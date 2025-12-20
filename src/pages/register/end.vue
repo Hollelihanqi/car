@@ -2,7 +2,7 @@
  * @Author: git.name
  * @Date: 2025-12-10
  * @LastEditors: zhoudandan
- * @LastEditTime: 2025-12-20 14:02:02
+ * @LastEditTime: 2025-12-20 16:12:59
  * @Description: 注册页面
 -->
 <template>
@@ -47,7 +47,7 @@ import PageContainer from '@/components/PageContainer.vue';
 import Header from '@/components/Header.vue';
 import { ref } from 'vue';
 const radioValue = ref('1');
-const showModal = ref(false);
+const showModal = ref(true);
 const toStepNext = () => {
   showModal.value = true;
 };
