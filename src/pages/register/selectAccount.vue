@@ -2,7 +2,7 @@
  * @Author: git.name
  * @Date: 2025-12-10
  * @LastEditors: zhoudandan
- * @LastEditTime: 2025-12-20 10:48:19
+ * @LastEditTime: 2025-12-20 15:20:37
  * @Description: 注册页面
 -->
 <template>
@@ -27,7 +27,8 @@
             class="h-[350rpx] w-full mt-[30rpx] flex justify-center items-center"
             :style="'background-color: ' + item.bgColor"
           >
-            <img :src="item.imageUrl" class="h-[280rpx]" />
+            <image :src="item.imageUrl" class="h-[280rpx]" mode="aspectFit"></image>
+            <!-- <img :src="" class="h-[280rpx]" /> -->
           </view>
 
           <view class="mt-[30rpx]">{{ item.content }}</view>
@@ -96,13 +97,6 @@ const tostepTwo = () => {
   font-weight: 600;
 }
 
-.banner-image {
-  width: 100%;
-  height: 200px;
-  padding-top: 60rpx;
-  background-color: #fff;
-  margin-bottom: 30rpx;
-}
 // 提交按钮 Footer
 .submit-footer {
   position: fixed;

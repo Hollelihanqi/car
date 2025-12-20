@@ -2,13 +2,13 @@
  * @Author: git.name
  * @Date: 2025-12-10
  * @LastEditors: zhoudandan
- * @LastEditTime: 2025-12-19 17:48:09
+ * @LastEditTime: 2025-12-20 15:22:43
  * @Description: 注册页面
 -->
 <template>
   <PageContainer>
     <!-- 图片 -->
-    <image src="/static/bg1.png" class="banner-image" mode="aspectFill"></image>
+    <image src="/static/bg1.png" class="banner-image" mode="aspectFit"></image>
     <!-- 文字描述 -->
     <view class="text-[30rpx]">
       <view class="title">欢迎使用香港汇丰流动理财</view>
@@ -59,8 +59,6 @@ const toRegister = () => {
   width: 100%;
   height: 250px;
   padding-top: calc(60rpx + var(--status-bar-height));
-  // height: 100rpx;
-  // width: 100%;
   background-color: #ededed;
 }
 // 提交按钮 Footer

@@ -2,7 +2,7 @@
  * @Author: git.name
  * @Date: 2025-12-10
  * @LastEditors: zhoudandan
- * @LastEditTime: 2025-12-19 16:47:26
+ * @LastEditTime: 2025-12-20 15:23:06
  * @Description: 注册页面
 -->
 <template>
@@ -11,7 +11,7 @@
     <Header></Header>
     <view class="page-title">感谢您选择汇丰</view>
     <!-- 图片 -->
-    <image src="/static/bg2.png" class="banner-image" mode="aspectFill"></image>
+    <image src="/static/bg2.png" class="banner-image" mode="aspectFit"></image>
     <!-- 文字描述 -->
     <view class="px-[32rpx] text-[30rpx]">
       <view>
