@@ -86,7 +86,7 @@ defineExpose({
 watch(
   () => minute.value,
   (v) => {
-    // 成功和失败在两分钟之内有结果就不用计时了，直接显示关闭按钮
+    // 成功和失败在两分钟之内有结果就不用计时了，直接显示关闭或导入按钮
     if (
       (allItemsComplete.value && allItemsSuccess.value) ||
       (allItemsComplete.value && !allItemsSuccess.value && verifyError.value)
@@ -104,14 +104,14 @@ watch(
 
 const emits = defineEmits(['fillFromCredential']);
 // 监听验证失败，显示 modal
-watch(
-  () => verificationStore.verifyError,
-  (error) => {
-    if (error && !verificationStore.allVerified) {
-      showModal.value = true;
-    }
-  }
-);
+// watch(
+//   () => verificationStore.verifyError,
+//   (error) => {
+//     if (error && !verificationStore.allVerified) {
+//       showModal.value = true;
+//     }
+//   }
+// );
 
 /** 处理取消按钮，返回首页 */
 const handleCancel = () => {
