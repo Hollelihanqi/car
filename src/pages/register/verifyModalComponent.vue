@@ -1,9 +1,9 @@
 <template>
   <!-- 验证失败跳转提示 Modal -->
-  <up-modal :show="showModal" :showConfirmButton="false" title="验证凭证">
+  <up-modal width="600rpx" :show="showModal" :showConfirmButton="false" title="验证凭证" contentTextAlign="center">
     <view class="modal-content">
       <!-- 验证成功 -->
-      <view v-if="allItemsComplete && allItemsSuccess" class="flex gap-[10rpx] py-[50rpx]">
+      <view v-if="allItemsComplete && allItemsSuccess" class="flex gap-[10rpx] py-[50rpx] justify-center">
         <view class="font-bold">手机号实名身份凭证</view>
         <view class="flex gap-[10rpx]">
           <text>验证成功</text>
@@ -11,7 +11,10 @@
         </view>
       </view>
       <!-- 验证失败 -->
-      <view v-else-if="allItemsComplete && !allItemsSuccess && verifyError" class="flex gap-[10rpx] py-[50rpx]">
+      <view
+        v-else-if="allItemsComplete && !allItemsSuccess && verifyError"
+        class="flex gap-[10rpx] py-[50rpx] justify-center"
+      >
         <view class="font-bold">手机号实名身份凭证</view>
 
         <view class="flex gap-[10rpx]">
@@ -20,13 +23,20 @@
         </view>
       </view>
       <!-- 正在验证 -->
-      <view v-else class="flex gap-[10rpx] py-[50rpx]">
-        <view>正在验证</view>
-        <view class="flex gap-[10rpx]">
-          <text class="font-bold">手机号实名身份凭证</text>
-          <up-loading-icon mode="semicircle" color="blue" size="20"></up-loading-icon>
+      <view v-else class="py-[50rpx]">
+        <view class="flex gap-[10rpx] justify-center">
+          <view>正在验证</view>
+          <view class="flex gap-[10rpx]">
+            <text class="font-bold">手机号实名身份凭证</text>
+            <up-loading-icon mode="semicircle" color="#305fcc" size="20"></up-loading-icon>
+          </view>
+        </view>
+        <view class="mt-[80rpx] border border-solid border-[#bbb] p-[10rpx] flex gap-[10rpx] items-center">
+          <view><up-icon name="error-circle" color="#305fcc" size="24" /></view>
+          <view>当前测试环境完成验证约需要1分钟时间,请稍后。</view>
         </view>
       </view>
+
       <!-- 验证成功显示确认导入按钮 -->
       <view v-if="allItemsComplete && allItemsSuccess" class="mt-[50rpx]">
         <button class="bg-[#db0011] text-white text-[30rpx]" @click="handleConfirm">确认导入</button>
