@@ -4,36 +4,28 @@
     <view class="modal-content">
       <!-- 验证成功 -->
       <view v-if="allItemsComplete && allItemsSuccess" class="flex gap-[10rpx] py-[50rpx] justify-center">
-        <view class="font-bold">手机号实名身份凭证</view>
-        <view class="flex gap-[10rpx]">
-          <text>验证成功</text>
-          <up-icon name="checkmark-circle" size="20" color="green" />
-        </view>
+        <text>手机号实名身份凭证验证成功</text>
+        <up-icon name="checkmark-circle" size="20" color="green" />
       </view>
       <!-- 验证失败 -->
       <view
         v-else-if="allItemsComplete && !allItemsSuccess && verifyError"
         class="flex gap-[10rpx] py-[50rpx] justify-center"
       >
-        <view class="font-bold">手机号实名身份凭证</view>
-
-        <view class="flex gap-[10rpx]">
-          <text>验证失败</text>
-          <up-icon name="close-circle" size="20" color="red" />
-        </view>
+        <text>手机号实名身份凭证验证失败</text>
+        <up-icon name="close-circle" size="20" color="red" />
       </view>
       <!-- 正在验证 -->
       <view v-else class="py-[50rpx]">
         <view class="flex gap-[10rpx] justify-center">
-          <view>正在验证</view>
-          <view class="flex gap-[10rpx]">
-            <text class="font-bold">手机号实名身份凭证</text>
-            <up-loading-icon mode="semicircle" color="#305fcc" size="20"></up-loading-icon>
-          </view>
+          <tex>正在验证手机号实名身份凭证</tex>
+          <up-loading-icon mode="semicircle" color="#00847f" size="20"></up-loading-icon>
         </view>
-        <view class="mt-[80rpx] border border-solid border-[#bbb] rounded p-[10rpx] flex gap-[10rpx] items-center">
-          <view><up-icon name="error-circle" color="#305fcc" size="24" /></view>
-          <view>当前测试环境完成验证约需要1分钟时间,请稍后。</view>
+        <view
+          class="mt-[80rpx] border border-solid bg-[#FFF8F8] border-[#FFCACD] rounded p-[10rpx] flex gap-[10rpx] items-center"
+        >
+          <view><up-icon name="error-circle" color="#00847f" size="24" /></view>
+          <view class="text-[26rpx]">测试环境原因，验证过程需60s左右，请耐心等候。</view>
         </view>
       </view>
 
