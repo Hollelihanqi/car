@@ -68,24 +68,32 @@ const allItemsSuccess = computed(() => {
   return verifyItems.value.every((item) => item.status === 'success');
 });
 
+//去小程序时的事件戳
+const oldTimeStamp = ref(0);
+
 // Modal 显示控制
 const showModal = ref(false);
 const minute = ref(0);
 defineExpose({
   showModal: () => {
     showModal.value = true;
-    minute.value = 0;
-    const timer = setInterval(() => {
-      minute.value += 1;
-      if (
-        minute.value >= 120 ||
-        (allItemsComplete.value && !allItemsSuccess.value && verifyError) ||
-        (allItemsComplete.value && allItemsSuccess)
-      )
-        clearInterval(timer);
+    oldTimeStamp.value = Math.floor(Date.now() / 1000);
+    setTimeout(() => {
+      minute.value = 1;
     }, 1000);
   }
 });
+watch(
+  () => minute.value,
+  (v) => {
+    if (v < 120) {
+      setTimeout(() => {
+        minute.value = Math.floor(Date.now() / 1000) - oldTimeStamp.value;
+        console.log(minute.value);
+      }, 1000);
+    }
+  }
+);
 
 const emits = defineEmits(['fillFromCredential']);
 // 监听验证失败，显示 modal
