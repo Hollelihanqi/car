@@ -31,7 +31,7 @@
             <up-loading-icon mode="semicircle" color="#305fcc" size="20"></up-loading-icon>
           </view>
         </view>
-        <view class="mt-[80rpx] border border-solid border-[#bbb] p-[10rpx] flex gap-[10rpx] items-center">
+        <view class="mt-[80rpx] border border-solid border-[#bbb] rounded p-[10rpx] flex gap-[10rpx] items-center">
           <view><up-icon name="error-circle" color="#305fcc" size="24" /></view>
           <view>当前测试环境完成验证约需要1分钟时间,请稍后。</view>
         </view>
