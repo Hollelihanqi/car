@@ -86,6 +86,13 @@ defineExpose({
 watch(
   () => minute.value,
   (v) => {
+    // 成功和失败在两分钟之内有结果就不用计时了，直接显示关闭按钮
+    if (
+      (allItemsComplete.value && allItemsSuccess.value) ||
+      (allItemsComplete.value && !allItemsSuccess.value && verifyError.value)
+    ) {
+      return;
+    }
     if (v < 120) {
       setTimeout(() => {
         minute.value = Math.floor(Date.now() / 1000) - oldTimeStamp.value;
