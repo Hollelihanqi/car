@@ -1,27 +1,69 @@
 <template>
   <!-- 验证失败跳转提示 Modal -->
-  <up-modal width="600rpx" :show="showModal" :showConfirmButton="false" title="验证凭证" contentTextAlign="center">
-    <view class="modal-content">
+  <up-modal :show="showModal" :showConfirmButton="false" title="验证凭证" contentTextAlign="center">
+    <view class="modal-content w-[500rpx]">
       <!-- 验证成功 -->
-      <view v-if="allItemsComplete && allItemsSuccess" class="flex gap-[10rpx] py-[50rpx] justify-center">
+      <!-- <view v-if="allItemsComplete && allItemsSuccess" class="flex gap-[10rpx] py-[50rpx] justify-center">
         <text>手机号实名身份凭证验证成功</text>
         <up-icon name="checkmark-circle" size="20" color="green" />
-      </view>
+      </view> -->
       <!-- 验证失败 -->
       <view
-        v-else-if="allItemsComplete && !allItemsSuccess && verifyError"
+        v-if="allItemsComplete && !allItemsSuccess && verifyError"
         class="flex gap-[10rpx] py-[50rpx] justify-center"
       >
         <text>手机号实名身份凭证验证失败</text>
         <up-icon name="close-circle" size="20" color="red" />
       </view>
-      <!-- 正在验证 -->
+      <!-- 正在验证与验证成功 -->
       <view v-else class="py-[50rpx]">
-        <view class="flex gap-[10rpx] justify-center">
+        <!-- <view class="flex gap-[10rpx] justify-center">
           <tex>正在验证手机号实名身份凭证</tex>
           <up-loading-icon mode="semicircle" color="#00847f" size="20"></up-loading-icon>
+        </view> -->
+        <view class="border border-solid border-[#ccc] rounded">
+          <view
+            v-for="(item, index) in verifyItems"
+            :key="index"
+            class="flex border-0 border-b border-solid border-[#ccc] py-[20rpx] px-[30rpx]"
+            :class="index >= verifyItems.length - 1 ? 'border-b-0' : ''"
+          >
+            <view class="text-gray-900 flex-1 font-normal text-left">{{ item.label }}</view>
+            <view class="self-center">
+              <!-- 成功状态：绿色圆圈带白色勾 -->
+              <view v-if="item.status === 'success'" class="flex items-center justify-center">
+                <view class="">
+                  <up-icon name="checkmark-circle-fill" color="#2ebd85" size="24" />
+                </view>
+              </view>
+              <!-- 错误状态：红色圆圈带白色叉 -->
+              <view v-else-if="item.status === 'error'" class="flex items-center justify-center">
+                <view class="">
+                  <up-icon name="close-circle-fill" color="#ff4d4f" size="24" />
+                </view>
+              </view>
+              <!-- 停止状态：红色圆圈带感叹号 -->
+              <view v-else-if="item.status === 'stopped'" class="flex items-center justify-center">
+                <view class="">
+                  <up-icon name="error-circle-fill" color="#ff4d4f" size="24"></up-icon>
+                </view>
+              </view>
+              <!-- 加载中状态：灰色圆形箭头（旋转） -->
+              <view v-else-if="item.status === 'loading'" class="flex items-center justify-center">
+                <view class="loading-circle">
+                  <up-icon name="/static/refresh.svg" size="24" />
+                </view>
+              </view>
+              <!-- API 错误状态：灰色圆圈（不旋转） -->
+              <view v-else-if="item.status === 'api-error'" class="flex items-center justify-center">
+                <view class="api-error-circle"></view>
+              </view>
+            </view>
+          </view>
         </view>
+
         <view
+          v-if="!(allItemsComplete && allItemsSuccess)"
           class="mt-[80rpx] border border-solid bg-[#FFF8F8] border-[#FFCACD] rounded p-[10rpx] flex gap-[10rpx] items-center"
         >
           <view><up-icon name="error-circle" color="#00847f" size="24" /></view>
@@ -125,4 +167,26 @@ const handleConfirm = () => {
 };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+// 加载中状态：灰色圆形箭头（旋转）
+.loading-circle {
+  animation: rotate 1s linear infinite;
+}
+
+// API 错误状态：灰色圆圈（不旋转，无箭头）
+.api-error-circle {
+  width: 40rpx;
+  height: 40rpx;
+  background: #e5e5e5;
+  border-radius: 50%;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

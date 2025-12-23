@@ -177,64 +177,7 @@ export const useVerificationStore = defineStore(
     };
 
     /** 一次性更新所有验证项状态 */
-    const updateAllVerifyItemsStatus = (result: string) => {
-      const itemsStatus = calculateVerifyItemsStatus(result);
-      // 当返回 HashMatched 或 VCStatusNormal 时，认为验证成功
-      const allSuccess =
-        itemsStatus.every((item) => item.status === 'success') &&
-        (result === 'HashMatched' || result === 'VCStatusNormal');
-      const firstErrorIndex = itemsStatus.findIndex((item) => item.status === 'error');
-
-      // itemsStatus 的索引映射（基于旧的验证顺序：签发者->所有者->签名->有效期->吊销状态）
-      // itemsStatus[0] = 签发者 -> verifyItems[2]
-      // itemsStatus[1] = 所有者 -> verifyItems[3]
-      // itemsStatus[2] = 签名 -> verifyItems[1]
-      // itemsStatus[3] = 有效期 -> verifyItems[0] (已提前验证)
-      // itemsStatus[4] = 吊销状态 -> verifyItems[4]
-      const statusToVerifyItemMap = [2, 3, 1, 0, 4]; // itemsStatus索引 -> verifyItems索引
-
-      // 一次性更新所有验证项状态（从索引1开始，因为索引0是有效期验证）
-      for (let i = 1; i < verifyItems.value.length; i++) {
-        // 找到 itemsStatus 中对应的索引
-        const statusIndex = statusToVerifyItemMap.indexOf(i);
-
-        if (statusIndex === -1 || statusIndex >= itemsStatus.length) continue;
-
-        // 如果之前有失败项，后续项显示为停止状态
-        if (firstErrorIndex !== -1 && statusIndex > firstErrorIndex) {
-          verifyItems.value[i].status = 'stopped';
-          continue;
-        }
-
-        verifyItems.value[i].status = itemsStatus[statusIndex].status;
-        verifyItems.value[i].errorMessage = itemsStatus[statusIndex].message;
-
-        if (itemsStatus[statusIndex].status === 'error') {
-          verifyError.value = itemsStatus[statusIndex].message;
-          for (let j = i + 1; j < verifyItems.value.length; j++) {
-            verifyItems.value[j].status = 'stopped';
-          }
-          break;
-        }
-      }
-
-      // 更新验证状态
-      if (allSuccess) {
-        allVerified.value = true;
-        verifySerialNumber.value = generateSerialNumber();
-        verifyTime.value = getCurrentTime();
-        verifyError.value = '';
-        const credentialStore = useCredentialStore();
-        credentialStore.setVerificationStatus(true);
-      } else {
-        allVerified.value = false;
-        const credentialStore = useCredentialStore();
-        credentialStore.setVerificationStatus(false);
-      }
-    };
-
-    /** 逐步更新验证项状态，每项之间有延迟 */
-    // const updateVerifyItemsStatusGradually = async (result: string) => {
+    // const updateAllVerifyItemsStatus = (result: string) => {
     //   const itemsStatus = calculateVerifyItemsStatus(result);
     //   // 当返回 HashMatched 或 VCStatusNormal 时，认为验证成功
     //   const allSuccess =
@@ -250,7 +193,7 @@ export const useVerificationStore = defineStore(
     //   // itemsStatus[4] = 吊销状态 -> verifyItems[4]
     //   const statusToVerifyItemMap = [2, 3, 1, 0, 4]; // itemsStatus索引 -> verifyItems索引
 
-    //   // 逐项更新状态，每项延迟 600-800ms（从索引1开始，因为索引0是有效期验证）
+    //   // 一次性更新所有验证项状态（从索引1开始，因为索引0是有效期验证）
     //   for (let i = 1; i < verifyItems.value.length; i++) {
     //     // 找到 itemsStatus 中对应的索引
     //     const statusIndex = statusToVerifyItemMap.indexOf(i);
@@ -262,12 +205,6 @@ export const useVerificationStore = defineStore(
     //       verifyItems.value[i].status = 'stopped';
     //       continue;
     //     }
-
-    //     verifyItems.value[i].status = 'loading';
-
-    //     await new Promise((resolve) => {
-    //       setTimeout(resolve, 600 + Math.random() * 200);
-    //     });
 
     //     verifyItems.value[i].status = itemsStatus[statusIndex].status;
     //     verifyItems.value[i].errorMessage = itemsStatus[statusIndex].message;
@@ -281,7 +218,7 @@ export const useVerificationStore = defineStore(
     //     }
     //   }
 
-    //   // 所有项都更新完成后，再显示顶部状态
+    //   // 更新验证状态
     //   if (allSuccess) {
     //     allVerified.value = true;
     //     verifySerialNumber.value = generateSerialNumber();
@@ -295,6 +232,69 @@ export const useVerificationStore = defineStore(
     //     credentialStore.setVerificationStatus(false);
     //   }
     // };
+
+    /** 逐步更新验证项状态，每项之间有延迟 */
+    const updateVerifyItemsStatusGradually = async (result: string) => {
+      const itemsStatus = calculateVerifyItemsStatus(result);
+      // 当返回 HashMatched 或 VCStatusNormal 时，认为验证成功
+      const allSuccess =
+        itemsStatus.every((item) => item.status === 'success') &&
+        (result === 'HashMatched' || result === 'VCStatusNormal');
+      const firstErrorIndex = itemsStatus.findIndex((item) => item.status === 'error');
+
+      // itemsStatus 的索引映射（基于旧的验证顺序：签发者->所有者->签名->有效期->吊销状态）
+      // itemsStatus[0] = 签发者 -> verifyItems[2]
+      // itemsStatus[1] = 所有者 -> verifyItems[3]
+      // itemsStatus[2] = 签名 -> verifyItems[1]
+      // itemsStatus[3] = 有效期 -> verifyItems[0] (已提前验证)
+      // itemsStatus[4] = 吊销状态 -> verifyItems[4]
+      const statusToVerifyItemMap = [2, 3, 1, 0, 4]; // itemsStatus索引 -> verifyItems索引
+
+      // 逐项更新状态，每项延迟 600-800ms（从索引1开始，因为索引0是有效期验证）
+      for (let i = 1; i < verifyItems.value.length; i++) {
+        // 找到 itemsStatus 中对应的索引
+        const statusIndex = statusToVerifyItemMap.indexOf(i);
+
+        if (statusIndex === -1 || statusIndex >= itemsStatus.length) continue;
+
+        // 如果之前有失败项，后续项显示为停止状态
+        if (firstErrorIndex !== -1 && statusIndex > firstErrorIndex) {
+          verifyItems.value[i].status = 'stopped';
+          continue;
+        }
+
+        verifyItems.value[i].status = 'loading';
+
+        await new Promise((resolve) => {
+          setTimeout(resolve, 600 + Math.random() * 200);
+        });
+
+        verifyItems.value[i].status = itemsStatus[statusIndex].status;
+        verifyItems.value[i].errorMessage = itemsStatus[statusIndex].message;
+
+        if (itemsStatus[statusIndex].status === 'error') {
+          verifyError.value = itemsStatus[statusIndex].message;
+          for (let j = i + 1; j < verifyItems.value.length; j++) {
+            verifyItems.value[j].status = 'stopped';
+          }
+          break;
+        }
+      }
+
+      // 所有项都更新完成后，再显示顶部状态
+      if (allSuccess) {
+        allVerified.value = true;
+        verifySerialNumber.value = generateSerialNumber();
+        verifyTime.value = getCurrentTime();
+        verifyError.value = '';
+        const credentialStore = useCredentialStore();
+        credentialStore.setVerificationStatus(true);
+      } else {
+        allVerified.value = false;
+        const credentialStore = useCredentialStore();
+        credentialStore.setVerificationStatus(false);
+      }
+    };
 
     /** 调用后端验证接口 */
     const callVerifyAPI = async () => {
@@ -367,7 +367,7 @@ export const useVerificationStore = defineStore(
 
         // 根据接口返回的 result 一次性更新所有验证项状态
         if (apiResult.code === 0 && apiResult.data?.result) {
-          updateAllVerifyItemsStatus(apiResult.data.result);
+          updateVerifyItemsStatusGradually(apiResult.data.result);
         } else {
           throw new Error(apiResult.message || '验证失败');
         }
