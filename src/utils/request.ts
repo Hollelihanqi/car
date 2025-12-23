@@ -59,6 +59,7 @@ const request = <T = any>(config: RequestConfig): Promise<T> => {
         // HTTP 状态码判断
         if (statusCode >= 200 && statusCode < 300) {
           // 直接返回响应数据（接口直接返回结果对象，无统一包装）
+          console.log('Request successful:', res);
           resolve(data);
         } else {
           const errorMsg = `请求失败: ${statusCode}`;

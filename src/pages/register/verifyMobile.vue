@@ -76,6 +76,7 @@ import Header from '@/components/Header.vue';
 import AreaCode from './areaCodeComponent.vue';
 import VerifyMobile from './verifyModalComponent.vue';
 import { ref } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 import { useCredentialStore } from '@/stores';
 const credentialStore = useCredentialStore();
 const { credentialSubject } = storeToRefs(credentialStore);
@@ -90,11 +91,21 @@ const verifyMobileModal = ref<{ showModal: () => void } | null>(null);
 const showVerifyMobileModal = () => {
   verifyMobileModal.value?.showModal();
 };
+
+const hasShownModal = ref(false);
+
 /** 拉起小程序 */
 const handleLaunchMiniProgram = () => {
-  showVerifyMobileModal();
+  hasShownModal.value = false;
   credentialStore.launchMiniProgram();
 };
+
+onShow(() => {
+  if (credentialStore.hasCredential && !hasShownModal.value) {
+    showVerifyMobileModal();
+    hasShownModal.value = true;
+  }
+});
 
 const extractValue = (source: Record<string, any>, keys: string[]): string => {
   for (const key of keys) {
