@@ -25,7 +25,7 @@
           class="mt-[80rpx] border border-solid bg-[#FFF8F8] border-[#FFCACD] rounded p-[10rpx] flex gap-[10rpx] items-center"
         >
           <view><up-icon name="error-circle" color="#00847f" size="24" /></view>
-          <view class="text-[26rpx]">测试环境原因，验证过程需60s左右，请耐心等候。</view>
+          <view class="text-[28rpx]">测试环境原因，验证过程需60s左右，请耐心等候。</view>
         </view>
       </view>
 
