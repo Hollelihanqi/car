@@ -1,6 +1,6 @@
 {
-  "name": "hello-uniapp",
-  "version": "0.0.0",
+  "name": "car-pool-miniapp",
+  "version": "1.0.0",
   "type": "module",
   "engines": {
     "node": "22.x",

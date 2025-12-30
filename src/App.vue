@@ -1,17 +1,12 @@
 <!--
  * @Author: zhoudandan
  * @Date: 2025-12-17 10:12:21
- * @LastEditors: zhoudandan
- * @LastEditTime: 2025-12-18 14:43:46
+ * @LastEditors: git.name
+ * @LastEditTime: 2025-12-30 17:30:39
  * @Description: Description
 -->
 <script setup lang="ts">
 import { onLaunch, onShow, onHide } from '@dcloudio/uni-app';
-import { useCredentialStore, useVerificationStore } from '@/stores';
-// import { useCredentialClipboard } from '@/hooks/useCredentialClipboard';
-
-const credentialStore = useCredentialStore();
-const verificationStore = useVerificationStore();
 
 // 记录是否是第一次启动（onLaunch 时设置）
 let isFirstLaunch = true;
@@ -19,10 +14,6 @@ let isFirstLaunch = true;
 onLaunch(() => {
   console.log('App Launch - 重置状态');
   isFirstLaunch = true; // 标记为第一次启动
-  // 重置凭证状态
-  credentialStore.clearCredential();
-  // 重置验证状态
-  verificationStore.resetVerification();
 });
 
 onShow(async () => {
@@ -38,9 +29,6 @@ onShow(async () => {
       const status = data.status;
       if (status == 0 || status == 2) {
         uni.reLaunch({ url: '/pages/home/Index' });
-      } else {
-        // 处理凭证参数
-        credentialStore.handleCredentialArgs(args);
       }
     } catch (error) {
       console.error('解析认证参数失败:', error);

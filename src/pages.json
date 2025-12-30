@@ -1,135 +1,35 @@
 {
 	"pages": [
 		{
-			"path": "pages/register/Index",
+			"path": "pages/index/index",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationBarTitleText": "拼车大厅"
 			}
 		},
 		{
-			"path": "pages/register/stepOne",
+			"path": "pages/publish/publish",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationBarTitleText": "发布拼车"
 			}
 		},
 		{
-			"path": "pages/register/condition",
+			"path": "pages/detail/detail",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationBarTitleText": "拼车详情"
 			}
 		},
 		{
-			"path": "pages/register/selectAccount",
+			"path": "pages/mine/mine",
 			"style": {
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/register/reason",
-			"style": {
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/register/qrCode",
-			"style": {
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/register/email",
-			"style": {
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/register/verifyMobile",
-			"style": {
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/register/end",
-			"style": {
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/home/Index",
-			"style": {
-				"navigationBarTitleText": "首页"
-			}
-		},
-		{
-			"path": "pages/home/AccountOpen",
-			"style": {
-				"navigationBarTitleText": "开立账户",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/home/CredentialInfo",
-			"style": {
-				"navigationBarTitleText": "手机号档案凭证"
-			}
-		},
-		{
-			"path": "pages/home/CredentialLoading",
-			"style": {
-				"navigationBarTitleText": "申请凭证",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/home/CredentialVerify",
-			"style": {
-				"navigationBarTitleText": "凭证验证"
-			}
-		},
-		{
-			"path": "pages/premier/Index",
-			"style": {
-				"navigationBarTitleText": "汇丰中国",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/account-apply/Index",
-			"style": {
-				"navigationBarTitleText": "开户申请",
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/auth/auth-login",
-			"style": {
-				"navigationBarTitleText": "授权登录"
-			}
-		},
-		{
-			"path": "pages/auth/apply-account-api",
-			"style": {
-				"navigationBarTitleText": "账号申请（接口）"
-			}
-		},
-		{
-			"path": "pages/auth/vc-loading",
-			"style": {
-				"navigationBarTitleText": "中国移动授权"
-			}
-		},
-		{
-			"path": "pages/auth/vc-upload",
-			"style": {
-				"navigationBarTitleText": "上传VC凭证"
+				"navigationBarTitleText": "我的"
 			}
 		}
 	],
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "上下班拼车",
+		"navigationBarBackgroundColor": "#62A9C8",
+		"backgroundColor": "#F5F7FA"
 	},
 	"easycom": {
 		"autoscan": true,
@@ -137,5 +37,27 @@
 			"^u-(.*)": "uview-plus/components/u-$1/u-$1.vue",
 			"^up-(.*)": "uview-plus/components/u-$1/u-$1.vue"
 		}
+	},
+	"tabBar": {
+		"custom": true,
+		"color": "#999999",
+		"selectedColor": "#62A9C8",
+		"backgroundColor": "#ffffff",
+		"borderStyle": "white",
+		"height": "0px",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": ""
+			},
+			{
+				"pagePath": "pages/publish/publish",
+				"text": ""
+			},
+			{
+				"pagePath": "pages/mine/mine",
+				"text": ""
+			}
+		]
 	}
 }
