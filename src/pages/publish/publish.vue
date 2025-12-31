@@ -3,7 +3,12 @@
     <view class="form-container">
       <!-- 拼车类型 -->
       <view class="form-section">
-        <view class="section-title">拼车类型</view>
+        <view class="section-header">
+          <view class="section-title">拼车类型</view>
+          <view class="import-btn" @click="importLastRecord">
+            <text class="import-text">导入上次</text>
+          </view>
+        </view>
         <view class="type-selector">
           <view class="type-item" :class="{ active: form.type === 'offer' }" @click="form.type = 'offer'">
             <text class="icon">🚗</text>
@@ -20,22 +25,14 @@
 
       <!-- 路线信息 -->
       <view class="form-section">
-        <view class="section-title">路线信息</view>
+        <view class="section-subtitle">路线信息</view>
         <view class="form-item">
           <text class="label required">出发地</text>
-          <picker :value="fromIndex" :range="locations" @change="handleFromChange">
-            <view class="picker" :class="{ placeholder: fromIndex === 0 }">
-              {{ fromIndex === 0 ? '请选择出发地' : locations[fromIndex] }}
-            </view>
-          </picker>
+          <input v-model="form.fromLocation" class="input" placeholder="请输入出发地" placeholder-class="placeholder" />
         </view>
         <view class="form-item">
           <text class="label required">目的地</text>
-          <picker :value="toIndex" :range="locations" @change="handleToChange">
-            <view class="picker" :class="{ placeholder: toIndex === 0 }">
-              {{ toIndex === 0 ? '请选择目的地' : locations[toIndex] }}
-            </view>
-          </picker>
+          <input v-model="form.toLocation" class="input" placeholder="请输入目的地" placeholder-class="placeholder" />
         </view>
         <view class="form-item">
           <text class="label required">出发时间</text>
@@ -50,12 +47,9 @@
             </view>
           </picker>
         </view>
-      </view>
 
-      <!-- 座位数（车找人时显示） -->
-      <view v-if="form.type === 'offer'" class="form-section">
-        <view class="section-title">座位数</view>
-        <view class="form-item">
+        <!-- 座位数（车找人时显示） -->
+        <view v-if="form.type === 'offer'" class="form-item">
           <text class="label required">剩余座位</text>
           <view class="seat-selector">
             <view
@@ -69,11 +63,10 @@
             </view>
           </view>
         </view>
-      </view>
 
-      <!-- 联系方式 -->
-      <view class="form-section">
-        <view class="section-title">联系方式</view>
+        <!-- 联系方式 -->
+        <view class="divider"></view>
+        <view class="section-subtitle">联系方式</view>
         <view class="form-item">
           <text class="label required">姓名</text>
           <input
@@ -103,11 +96,10 @@
             placeholder-class="placeholder"
           />
         </view>
-      </view>
 
-      <!-- 备注说明 -->
-      <view class="form-section">
-        <view class="section-title">备注说明</view>
+        <!-- 备注说明 -->
+        <view class="divider"></view>
+        <view class="section-subtitle">备注说明</view>
         <view class="form-item">
           <textarea
             v-model="form.remark"
@@ -143,11 +135,6 @@ import TabBar from '@/components/TabBar.vue';
 defineOptions({
   name: 'PublishPage'
 });
-
-// 地点列表
-const locations = ['请选择', '西安市内', '西咸新区', '高新区', '曲江新区', '经开区', '浐灞新区'];
-const fromIndex = ref(0);
-const toIndex = ref(0);
 
 // 日期和时间列表
 const dateList = ref<string[]>([]);
@@ -185,7 +172,10 @@ const initDateTime = () => {
 initDateTime();
 
 // 表单数据
-const form = reactive<Partial<CarPoolInfo>>({
+// 定义表单类型，确保 contact 存在
+type CarPoolForm = Omit<CarPoolInfo, 'id' | 'userId' | 'createTime' | 'status' | 'viewCount'>;
+
+const form = reactive<CarPoolForm>({
   type: 'offer',
   fromLocation: '',
   toLocation: '',
@@ -198,22 +188,6 @@ const form = reactive<Partial<CarPoolInfo>>({
   },
   remark: ''
 });
-
-// 选择出发地
-const handleFromChange = (e: any) => {
-  fromIndex.value = e.detail.value;
-  if (fromIndex.value > 0) {
-    form.fromLocation = locations[fromIndex.value];
-  }
-};
-
-// 选择目的地
-const handleToChange = (e: any) => {
-  toIndex.value = e.detail.value;
-  if (toIndex.value > 0) {
-    form.toLocation = locations[toIndex.value];
-  }
-};
 
 // 选择时间
 const handleTimeChange = (e: any) => {
@@ -232,14 +206,56 @@ const handleTimeChange = (e: any) => {
   form.departureTime = `${dateList.value[dIndex]} ${timeList.value[tIndex]}`;
 };
 
+// 导入上次发布记录
+const importLastRecord = () => {
+  // TODO: 从本地存储或云端获取最近一次的发布记录
+  // const lastRecord = uni.getStorageSync('lastPublishRecord')
+
+  // 模拟导入上次的数据
+  const lastRecord = uni.getStorageSync('lastPublishRecord');
+
+  if (!lastRecord) {
+    uni.showToast({
+      title: '暂无历史记录',
+      icon: 'none',
+      duration: 2000
+    });
+    return;
+  }
+
+  uni.showModal({
+    title: '确认导入',
+    content: '将导入上次发布的信息，是否继续？',
+    success: (res) => {
+      if (res.confirm) {
+        // 导入数据
+        form.type = lastRecord.type;
+        form.fromLocation = lastRecord.fromLocation;
+        form.toLocation = lastRecord.toLocation;
+        form.seats = lastRecord.seats || 1;
+        form.contact.name = lastRecord.contact.name;
+        form.contact.phone = lastRecord.contact.phone;
+        form.contact.wechat = lastRecord.contact.wechat || '';
+        form.remark = lastRecord.remark || '';
+
+        uni.showToast({
+          title: '导入成功',
+          icon: 'success',
+          duration: 2000
+        });
+      }
+    }
+  });
+};
+
 // 验证表单
 const validateForm = (): boolean => {
-  if (fromIndex.value === 0) {
-    uni.showToast({ title: '请选择出发地', icon: 'none' });
+  if (!form.fromLocation || form.fromLocation.trim() === '') {
+    uni.showToast({ title: '请输入出发地', icon: 'none' });
     return false;
   }
-  if (toIndex.value === 0) {
-    uni.showToast({ title: '请选择目的地', icon: 'none' });
+  if (!form.toLocation || form.toLocation.trim() === '') {
+    uni.showToast({ title: '请输入目的地', icon: 'none' });
     return false;
   }
   if (!form.departureTime) {
@@ -273,6 +289,20 @@ const handleSubmit = async () => {
 
     // 模拟发布成功
     await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // 保存本次发布记录到本地存储
+    uni.setStorageSync('lastPublishRecord', {
+      type: form.type,
+      fromLocation: form.fromLocation,
+      toLocation: form.toLocation,
+      seats: form.seats,
+      contact: {
+        name: form.contact.name,
+        phone: form.contact.phone,
+        wechat: form.contact.wechat
+      },
+      remark: form.remark
+    });
 
     uni.hideLoading();
     uni.showToast({
@@ -313,11 +343,48 @@ const handleSubmit = async () => {
   padding: 30rpx;
   margin-bottom: 20rpx;
 
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30rpx;
+  }
+
   .section-title {
     font-size: 32rpx;
     font-weight: bold;
     color: #333;
-    margin-bottom: 30rpx;
+  }
+
+  .section-subtitle {
+    font-size: 28rpx;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 24rpx;
+  }
+
+  .divider {
+    height: 1rpx;
+    background: #f0f0f0;
+    margin: 32rpx 0;
+  }
+
+  .import-btn {
+    padding: 10rpx 24rpx;
+    background: #ff6b00;
+    border-radius: 20rpx;
+    transition: all 0.3s;
+
+    &:active {
+      transform: scale(0.95);
+      opacity: 0.8;
+    }
+
+    .import-text {
+      font-size: 24rpx;
+      color: #fff;
+      font-weight: 600;
+    }
   }
 }
 
@@ -330,35 +397,35 @@ const handleSubmit = async () => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40rpx 20rpx;
+    padding: 16rpx 8rpx;
     background-color: #f8f8f8;
     border-radius: 16rpx;
     border: 2rpx solid transparent;
     transition: all 0.3s;
 
     .icon {
-      font-size: 60rpx;
-      margin-bottom: 15rpx;
+      font-size: 32rpx;
+      margin-bottom: 6rpx;
     }
 
     .label {
-      font-size: 28rpx;
+      font-size: 24rpx;
       font-weight: bold;
       color: #333;
-      margin-bottom: 8rpx;
+      margin-bottom: 2rpx;
     }
 
     .desc {
-      font-size: 24rpx;
+      font-size: 20rpx;
       color: #999;
     }
 
     &.active {
-      background-color: #e6f7f9;
-      border-color: #62a9c8;
+      background-color: #fff3e0;
+      border-color: #ff6b00;
 
       .label {
-        color: #62a9c8;
+        color: #ff6b00;
       }
     }
   }
@@ -387,11 +454,14 @@ const handleSubmit = async () => {
   .picker,
   .input {
     width: 100%;
-    padding: 20rpx 30rpx;
+    height: 80rpx;
+    padding: 0 30rpx;
     background-color: #f8f8f8;
     border-radius: 12rpx;
     font-size: 28rpx;
     color: #333;
+    box-sizing: border-box;
+    line-height: 80rpx;
 
     &.placeholder {
       color: #999;
@@ -410,6 +480,7 @@ const handleSubmit = async () => {
     font-size: 28rpx;
     color: #333;
     min-height: 200rpx;
+    box-sizing: border-box;
 
     &::placeholder {
       color: #999;
@@ -440,9 +511,9 @@ const handleSubmit = async () => {
     transition: all 0.3s;
 
     &.active {
-      background-color: #e6f7f9;
-      border-color: #62a9c8;
-      color: #62a9c8;
+      background-color: #fff3e0;
+      border-color: #ff6b00;
+      color: #ff6b00;
       font-weight: bold;
     }
   }
@@ -455,7 +526,7 @@ const handleSubmit = async () => {
     width: 100%;
     height: 96rpx;
     line-height: 96rpx;
-    background: linear-gradient(135deg, #62a9c8 0%, #147ebc 100%);
+    background: linear-gradient(135deg, #ff6b00 0%, #ff8f00 100%);
     border-radius: 48rpx;
     font-size: 32rpx;
     font-weight: bold;

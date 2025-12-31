@@ -16,8 +16,8 @@ export default defineConfig({
   transformers: [transformerDirectives(), transformerVariantGroup()],
   theme: {
     colors: {
-      primary: '#db0011', // 主色
-      primary2: '#c92a25' // 中移红
+      primary: '#FF6B00', // 主色 - 橙色
+      primary2: '#FF8F00' // 辅色
     }
   }
 });

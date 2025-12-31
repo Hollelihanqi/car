@@ -119,7 +119,8 @@ export default defineConfig([
       '.vite/',
       '*.config.{js,ts}',
       'swagger/templates/',
-      'typings/'
+      'typings/',
+      'uniCloud-aliyun/'
     ]
   }
 ]);

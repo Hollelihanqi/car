@@ -23,12 +23,19 @@
 			"style": {
 				"navigationBarTitleText": "我的"
 			}
+		},
+		{
+			"path": "pages/history/history",
+			"style": {
+				"navigationBarTitleText": "我的发布",
+				"navigationStyle": "custom"
+			}
 		}
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "上下班拼车",
-		"navigationBarBackgroundColor": "#62A9C8",
+		"navigationBarBackgroundColor": "#FF6B00",
 		"backgroundColor": "#F5F7FA"
 	},
 	"easycom": {
@@ -41,7 +48,7 @@
 	"tabBar": {
 		"custom": true,
 		"color": "#999999",
-		"selectedColor": "#62A9C8",
+		"selectedColor": "#FF6B00",
 		"backgroundColor": "#ffffff",
 		"borderStyle": "white",
 		"height": "0px",

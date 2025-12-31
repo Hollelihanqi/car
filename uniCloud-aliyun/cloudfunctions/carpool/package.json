@@ -1,0 +1,9 @@
+{
+  "name": "carpool",
+  "version": "1.0.0",
+  "description": "拼车云函数",
+  "main": "index.js",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

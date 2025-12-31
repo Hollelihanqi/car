@@ -1,107 +1,72 @@
 import type { CarPoolInfo, FilterParams, PageParams, PageResponse, UserInfo } from '@/typings/carpool';
-import { http } from '@/utils/request';
+import { callCarpoolFunction, callUserFunction } from '@/utils/cloud';
 
 /**
  * 获取拼车信息列表
  */
 export const getCarPoolList = (params: FilterParams & PageParams) => {
-  return http<PageResponse<CarPoolInfo>>({
-    url: '/carpool/list',
-    method: 'GET',
-    data: params
-  });
+  return callCarpoolFunction<PageResponse<CarPoolInfo>>('getList', params);
 };
 
 /**
  * 获取拼车详情
  */
 export const getCarPoolDetail = (id: string) => {
-  return http<CarPoolInfo>({
-    url: `/carpool/detail/${id}`,
-    method: 'GET'
-  });
+  return callCarpoolFunction<CarPoolInfo>('getDetail', { id });
 };
 
 /**
  * 发布拼车信息
  */
 export const publishCarPool = (data: Partial<CarPoolInfo>) => {
-  return http<{ id: string }>({
-    url: '/carpool/publish',
-    method: 'POST',
-    data
-  });
+  return callCarpoolFunction<{ id: string }>('publish', data);
 };
 
 /**
  * 更新拼车信息
  */
 export const updateCarPool = (id: string, data: Partial<CarPoolInfo>) => {
-  return http<boolean>({
-    url: `/carpool/update/${id}`,
-    method: 'PUT',
-    data
-  });
+  return callCarpoolFunction<boolean>('update', { id, updates: data });
 };
 
 /**
  * 取消拼车信息
  */
 export const cancelCarPool = (id: string) => {
-  return http<boolean>({
-    url: `/carpool/cancel/${id}`,
-    method: 'POST'
-  });
+  return callCarpoolFunction<boolean>('cancel', { id });
 };
 
 /**
  * 删除拼车信息
  */
 export const deleteCarPool = (id: string) => {
-  return http<boolean>({
-    url: `/carpool/delete/${id}`,
-    method: 'DELETE'
-  });
+  return callCarpoolFunction<boolean>('delete', { id });
 };
 
 /**
  * 获取我的发布列表
  */
 export const getMyCarPoolList = (params: PageParams) => {
-  return http<PageResponse<CarPoolInfo>>({
-    url: '/carpool/my',
-    method: 'GET',
-    data: params
-  });
+  return callCarpoolFunction<PageResponse<CarPoolInfo>>('getMyList', params);
 };
 
 /**
  * 获取用户信息
  */
 export const getUserInfo = () => {
-  return http<UserInfo>({
-    url: '/user/info',
-    method: 'GET'
-  });
+  return callUserFunction<UserInfo>('getInfo');
 };
 
 /**
  * 更新用户信息
  */
 export const updateUserInfo = (data: Partial<UserInfo>) => {
-  return http<boolean>({
-    url: '/user/update',
-    method: 'PUT',
-    data
-  });
+  return callUserFunction<boolean>('update', data);
 };
 
 /**
  * 增加浏览次数
  */
 export const increaseViewCount = (id: string) => {
-  return http<boolean>({
-    url: `/carpool/view/${id}`,
-    method: 'POST'
-  });
+  return callCarpoolFunction<boolean>('increaseView', { id });
 };

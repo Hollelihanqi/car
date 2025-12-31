@@ -49,7 +49,7 @@ const updateCurrentPath = () => {
   try {
     const pages = getCurrentPages();
     if (pages && pages.length > 0) {
-      const currentPage = pages[pages.length - 1];
+      const currentPage = pages[pages.length - 1] as any;
       const route = currentPage.route || currentPage.$page?.fullPath || '';
       currentPath.value = route.startsWith('/') ? route : '/' + route;
     }
@@ -62,14 +62,22 @@ const updateCurrentPath = () => {
 const switchTab = (path: string) => {
   if (currentPath.value === path) return;
 
-  uni.redirectTo({
+  // 使用 switchTab 切换到 tabBar 页面
+  uni.switchTab({
     url: path,
-    fail: () => {
-      console.log('redirectTo 失败，尝试 navigateTo');
-      uni.navigateTo({
+    fail: (err) => {
+      console.log('switchTab 失败，尝试 redirectTo', err);
+      // 如果 switchTab 失败，说明可能不是 tabBar 页面，使用 redirectTo
+      uni.redirectTo({
         url: path,
         fail: () => {
-          console.log('navigateTo 失败');
+          console.log('redirectTo 失败，尝试 navigateTo');
+          uni.navigateTo({
+            url: path,
+            fail: () => {
+              console.log('navigateTo 失败');
+            }
+          });
         }
       });
     }
@@ -103,13 +111,13 @@ onActivated(() => {
   pointer-events: auto;
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.45);
   backdrop-filter: blur(20px);
-  border-radius: 56rpx;
-  padding: 12rpx 20rpx;
+  border-radius: 999px;
+  padding: 8rpx 20rpx;
   box-shadow:
-    0 8rpx 32rpx rgba(98, 169, 200, 0.12),
-    0 2rpx 8rpx rgba(98, 169, 200, 0.08);
+    0 8rpx 32rpx rgba(255, 107, 0, 0.12),
+    0 2rpx 8rpx rgba(255, 107, 0, 0.08);
 }
 
 .tab-item {
@@ -117,7 +125,7 @@ onActivated(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12rpx 0;
+  padding: 8rpx 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   .tab-icon-wrapper {
@@ -142,12 +150,12 @@ onActivated(() => {
     .tab-icon-wrapper {
       .tab-icon {
         transform: scale(1.15);
-        filter: drop-shadow(0 2rpx 8rpx rgba(98, 169, 200, 0.4));
+        filter: drop-shadow(0 2rpx 8rpx rgba(255, 107, 0, 0.4));
       }
     }
 
     .tab-label {
-      color: #62a9c8;
+      color: #ff6b00;
       font-weight: 600;
     }
   }

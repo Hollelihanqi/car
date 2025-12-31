@@ -2,10 +2,19 @@
   <PageContainer>
     <view v-if="detail" class="detail-container">
       <!-- 类型标签 -->
-      <view class="type-banner" :class="detail.type">
-        <view class="type-icon">{{ detail.type === 'offer' ? '🚗' : '🙋' }}</view>
-        <view class="type-text">
-          {{ detail.type === 'offer' ? '车找人' : '人找车' }}
+      <view class="type-header">
+        <view class="header-top">
+          <view class="type-badge" :class="detail.type">
+            <text class="badge-icon">{{ detail.type === 'offer' ? '🚗' : '🙋' }}</text>
+            <text class="badge-text">{{ detail.type === 'offer' ? '车找人' : '人找车' }}</text>
+          </view>
+          <view class="view-count">
+            <text class="view-icon">👁</text>
+            <text class="view-text">{{ detail.viewCount }}次浏览</text>
+          </view>
+        </view>
+        <view class="header-bottom">
+          <text class="publish-time">发布于 {{ formatTime(detail.createTime) }}</text>
         </view>
       </view>
 
@@ -72,18 +81,6 @@
             <text class="value">{{ detail.contact.wechat }}</text>
             <text class="action">📋 复制</text>
           </view>
-        </view>
-      </view>
-
-      <!-- 发布信息 -->
-      <view class="info-section meta-section">
-        <view class="meta-item">
-          <text class="label">发布时间</text>
-          <text class="value">{{ formatTime(detail.createTime) }}</text>
-        </view>
-        <view class="meta-item">
-          <text class="label">浏览次数</text>
-          <text class="value">{{ detail.viewCount }}次</text>
         </view>
       </view>
     </view>
@@ -226,39 +223,94 @@ onLoad((options: any) => {
 <style lang="scss" scoped>
 :deep(.page-container) {
   padding-bottom: 140rpx;
+  background: linear-gradient(180deg, #f5f7fa 0%, #fff 100%);
 }
 
-.type-banner {
+.detail-container {
+  padding: 24rpx;
+}
+
+.type-header {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60rpx 30rpx;
-  margin-bottom: 20rpx;
+  flex-direction: column;
+  gap: 20rpx;
+  padding: 32rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
 
-  &.offer {
-    background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
-  &.request {
-    background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  .type-badge {
+    display: flex;
+    align-items: center;
+    gap: 12rpx;
+    padding: 16rpx 32rpx;
+    border-radius: 24rpx;
+    font-size: 28rpx;
+
+    &.offer {
+      background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+      color: #e65100;
+    }
+
+    &.request {
+      background: linear-gradient(135deg, #fff0f0 0%, #ffe5e5 100%);
+      color: #ff5252;
+    }
+
+    .badge-icon {
+      font-size: 36rpx;
+    }
+
+    .badge-text {
+      font-weight: 700;
+      font-size: 30rpx;
+    }
   }
 
-  .type-icon {
-    font-size: 80rpx;
-    margin-right: 20rpx;
+  .view-count {
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
+    padding: 12rpx 24rpx;
+    background: #f8f8f8;
+    border-radius: 20rpx;
+
+    .view-icon {
+      font-size: 24rpx;
+    }
+
+    .view-text {
+      font-size: 24rpx;
+      color: #999;
+    }
   }
 
-  .type-text {
-    font-size: 48rpx;
-    font-weight: bold;
-    color: #fff;
+  .header-bottom {
+    padding-top: 20rpx;
+    border-top: 1rpx solid #f5f5f5;
+
+    .publish-time {
+      font-size: 24rpx;
+      color: #999;
+      display: flex;
+      align-items: center;
+    }
   }
 }
 
 .info-section {
   background-color: #fff;
-  padding: 30rpx;
-  margin-bottom: 20rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
 
   .section-title {
     display: flex;
@@ -301,11 +353,11 @@ onLoad((options: any) => {
     }
 
     &.from .dot {
-      background-color: #62a9c8;
+      background-color: #ff6b00;
     }
 
     &.to .dot {
-      background-color: #ff9800;
+      background-color: #ff5252;
     }
 
     .location {
@@ -384,39 +436,17 @@ onLoad((options: any) => {
 
     .action {
       font-size: 26rpx;
-      color: #62a9c8;
+      color: #ff6b00;
       padding: 8rpx 20rpx;
-      background-color: #e6f7f9;
+      background-color: #fff3e0;
       border-radius: 20rpx;
     }
 
     &.phone {
       .action {
-        color: #2196f3;
-        background-color: #e3f2fd;
+        color: #ff6b00;
+        background-color: #fff3e0;
       }
-    }
-  }
-}
-
-.meta-section {
-  display: flex;
-  justify-content: space-around;
-
-  .meta-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    .label {
-      font-size: 24rpx;
-      color: #999;
-      margin-bottom: 10rpx;
-    }
-
-    .value {
-      font-size: 28rpx;
-      color: #333;
     }
   }
 }
@@ -462,12 +492,12 @@ onLoad((options: any) => {
     }
 
     &.primary {
-      background-color: #0eb0c9;
+      background-color: #ff6b00;
       color: #fff;
     }
 
     &.success {
-      background-color: #2196f3;
+      background-color: #4caf50;
       color: #fff;
     }
   }
