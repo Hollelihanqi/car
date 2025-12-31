@@ -1,7 +1,7 @@
 import { createSSRApp } from 'vue';
 import App from './App.vue';
 import * as Pinia from 'pinia';
-import { createUniPersistPlugin } from './stores/plugins/persist';
+import { createUniPersistPlugin } from 'pinia-plugin-uni-persist-next';
 import 'uno.css';
 
 export function createApp() {
